@@ -1,0 +1,61 @@
+// import { BrowserModule } from '@angular/platform-browser';
+// import { NgModule } from '@angular/core';
+
+// import { IconsProviderModule } from './icons-provider.module';
+
+// import { ReactiveFormsModule } from '@angular/forms';
+// import { HttpClientModule } from '@angular/common/http';
+// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// import { NZ_I18N } from 'ng-zorro-antd/i18n';
+// import { en_US } from 'ng-zorro-antd/i18n';
+
+// import { GlobalImportsModule } from './global-imports.module';
+// import { MainComponent } from './main.component';
+// import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+// import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
+// import { TreeModule } from 'angular-tree-component';
+// import en from '@angular/common/locales/en';
+// import { registerLocaleData } from '@angular/common';
+
+// registerLocaleData(en);
+// export function storageFactory() : OAuthStorage {
+//   return localStorage
+// }
+
+// const routes: Routes = [
+//     {
+//         path: 'first-setup',
+//         loadChildren: () => import('./components/first-setup/first-setup.module').then(m => m.FirstSetupModule)
+//     }
+//     ,
+//     {
+//         path: '',
+//         loadChildren: () => import('./app.module').then(m => m.AppModule)
+//     }
+// ];
+
+
+// @NgModule({
+//     declarations: [
+//         MainComponent,
+//     ],
+//     imports: [
+//         BrowserModule,
+//         RouterModule.forRoot(routes,  { enableTracing: false, preloadingStrategy: PreloadAllModules }),
+//         ReactiveFormsModule,
+//         IconsProviderModule,
+//         HttpClientModule,
+//         BrowserAnimationsModule,
+//         GlobalImportsModule,
+//         OAuthModule.forRoot(),
+//         TreeModule.forRoot(),
+//     ],
+//     providers: [
+//         { provide: NZ_I18N, useValue: en_US },
+//         { provide: OAuthStorage, useFactory: storageFactory }
+//     ],
+//     bootstrap: [MainComponent]
+// })
+// export class MainModule {
+
+// }
