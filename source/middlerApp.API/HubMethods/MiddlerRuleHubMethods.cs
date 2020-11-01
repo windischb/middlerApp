@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using middlerApp.API.DataAccess;
 using middlerApp.API.Helper;
-using middlerApp.API.IDP.Services;
+using middlerApp.Core.DataAccess.Entities.Models;
+using middlerApp.Core.Repository;
+using middlerApp.Events;
+using middlerApp.IDP.Library.Services;
 using SignalARRR.Attributes;
 using SignalARRR.Server;
 

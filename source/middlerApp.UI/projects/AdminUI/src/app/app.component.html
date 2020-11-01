@@ -113,7 +113,8 @@
 
 
   <ng-container *ngIf="uiContext$ | async; let ui">
-    <div class="main" *ngIf="user.isAuthenticated">
+
+    <div class="main" *ngIf="user.isAuthenticated || ui.Content.ShowAlways">
 
       <div class="main-header">
         <div class="title-container ui container">
@@ -128,6 +129,7 @@
           <div style="display: flex; flex-direction: column; justify-content: center; line-height: 1.3em;">
             <div class="title" [class.title-only]="!ui.Header.SubTitle">
               {{ui.Header.Title}}
+              
             </div>
             <div class="subtitle" *ngIf="ui.Header.SubTitle">
               {{ui.Header.SubTitle}}

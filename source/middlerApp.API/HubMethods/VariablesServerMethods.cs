@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using middler.Common.SharedModels.Interfaces;
-using middlerApp.API.DataAccess;
+using middlerApp.Core.DataAccess.Entities.Models;
+using middlerApp.Core.Repository;
+using middlerApp.Events;
 using SignalARRR.Attributes;
 using SignalARRR.Server;
 
@@ -15,8 +17,11 @@ namespace middlerApp.API.HubMethods
     {
         public VariablesRepository VariablesStore { get; }
 
-        public VariablesServerMethods(IVariablesRepository variablesStore)
+        public DataEventDispatcher EventDispatcher { get; }
+
+        public VariablesServerMethods(IVariablesRepository variablesStore, DataEventDispatcher eventDispatcher)
         {
+            EventDispatcher = eventDispatcher;
             VariablesStore = variablesStore as VariablesRepository;
         }
 
@@ -96,9 +101,10 @@ namespace middlerApp.API.HubMethods
         //    return typings;
         //}
 
-        public IObservable<string> Subscribe()
+        public IObservable<DataEvent> Subscribe()
         {
-            return (VariablesStore).EventObservable.Select(ev => ev.Action.ToString());
+            return EventDispatcher.Notifications
+                .Where(ev => ev.Subject == "Variables");
         }
     }
 }

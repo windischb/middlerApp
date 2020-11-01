@@ -47,6 +47,11 @@ export class ScriptModalComponent implements OnInit {
         this.context.invoke("OK", this.form.value);
     }
 
+    save() {
+        console.log("save modal")
+        this.context.invoke("Save", this.form.value);
+    }
+
     cancel() {
         this.context.handle.Close();
     }

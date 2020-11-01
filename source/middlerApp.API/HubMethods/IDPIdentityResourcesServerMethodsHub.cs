@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using middlerApp.API.IDP.DtoModels;
-using middlerApp.API.IDP.Models;
-using middlerApp.API.IDP.Services;
+using middlerApp.Events;
+using middlerApp.IDP.DataAccess.Entities.Models;
+using middlerApp.IDP.Library.DtoModels;
+using middlerApp.IDP.Library.Services;
 using SignalARRR.Attributes;
 using SignalARRR.Server;
 

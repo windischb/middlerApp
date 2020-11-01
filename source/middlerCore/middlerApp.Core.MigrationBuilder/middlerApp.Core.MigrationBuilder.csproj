@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0-rc.2.20475.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\middlerApp.Core.DataAccess.Sqlite\middlerApp.Core.DataAccess.Sqlite.csproj" />
+    <ProjectReference Include="..\middlerApp.Core.DataAccess.SqlServer\middlerApp.Core.DataAccess.SqlServer.csproj" />
+    <ProjectReference Include="..\middlerApp.Core.DataAccess.Postgres\middlerApp.Core.DataAccess.Postgres.csproj" />
+  </ItemGroup>
+
+</Project>

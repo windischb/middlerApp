@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using middlerApp.API.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using middlerApp.API.IDP;
-using middlerApp.API.IDP.Models;
-using middlerApp.API.IDP.Services;
 using middlerApp.API.Models;
+using middlerApp.IDP.DataAccess.Entities.Models;
+using middlerApp.IDP.Library;
+using middlerApp.IDP.Library.Services;
 
 namespace middlerApp.API.Controllers.Admin
 {
@@ -57,7 +54,7 @@ namespace middlerApp.API.Controllers.Admin
 
             await _localUserService.AddUserAsync(user, firstSetupModel.Password);
 
-            await _defaultResourcesManager.EnsureAdminClientExists(firstSetupModel.RedirectUri);
+            //await _defaultResourcesManager.EnsureAdminClientExists(firstSetupModel.RedirectUri);
 
             return Ok();
         }

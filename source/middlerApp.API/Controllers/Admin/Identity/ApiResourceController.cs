@@ -4,13 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using IdentityModel;
-using IdentityServer4;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using middlerApp.API.Attributes;
-using middlerApp.API.IDP.DtoModels;
-using middlerApp.API.IDP.Services;
-using middlerApp.API.IDP.Storage.Entities;
+using middlerApp.IDP.DataAccess.Entities.Entities;
+using middlerApp.IDP.Library.DtoModels;
+using middlerApp.IDP.Library.Services;
 
 namespace middlerApp.API.Controllers.Admin.Identity
 {

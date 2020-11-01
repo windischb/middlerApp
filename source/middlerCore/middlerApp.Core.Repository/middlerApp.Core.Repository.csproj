@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="middler.Common" Version="1.0.0" />
+    <PackageReference Include="middler.Core" Version="1.0.0" />
+    <PackageReference Include="System.Reactive.Linq" Version="4.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\middlerApp.Core.DataAccess\middlerApp.Core.DataAccess.csproj" />
+    <ProjectReference Include="..\middlerApp.Core.DataAccess.Sqlite\middlerApp.Core.DataAccess.Sqlite.csproj" />
+    <ProjectReference Include="..\middlerApp.Core.DataAccess.SqlServer\middlerApp.Core.DataAccess.SqlServer.csproj" />
+    <ProjectReference Include="..\..\middlerApp.Events\middlerApp.Events.csproj" />
+    <ProjectReference Include="..\middlerApp.Core.DataAccess.Postgres\middlerApp.Core.DataAccess.Postgres.csproj" />
+  </ItemGroup>
+
+</Project>

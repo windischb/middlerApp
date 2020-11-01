@@ -17,6 +17,9 @@ namespace middlerApp.API
 
         public StartUpIdpConfiguration IdpSettings { get; } = new StartUpIdpConfiguration();
 
+        public DatabaseConfiguration DbSettings { get; } = new DatabaseConfiguration();
+       
+
         //public EndpointRulesConfiguration EndpointRulesSettings { get; } = new EndpointRulesConfiguration();
 
         //public GlobalVariablesConfiguration GlobalVariablesSettings { get; } = new GlobalVariablesConfiguration();
@@ -59,6 +62,14 @@ namespace middlerApp.API
         public string HttpsCertPassword { get; set; }
         public string WebRoot { get; set; } = "IdentityUI";
 
+    }
+
+    public class DatabaseConfiguration
+    {
+        public string Provider { get; set; } = "postgres";
+
+        public string ConnectionString { get; set; } =
+            "Host=10.0.0.22;Database=MiddlerApp;Username=postgres;Password=postgres";
     }
 
     //public class EndpointRulesConfiguration

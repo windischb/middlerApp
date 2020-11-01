@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RoutingComponents, GlobalVariablesRoutingModule } from './global-variables-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { AngularSplitModule } from 'angular-split';
 import { DoobCdkHelperModule } from '@doob-ng/cdk-helper';
 import { GlobalVariablesExplorerComponent } from './explorer';
 import { DoobCoreModule } from '@doob-ng/core';
@@ -22,7 +21,6 @@ import { TreeModule } from '@circlon/angular-tree-component';
         ReactiveFormsModule,
         GlobalVariablesRoutingModule,
         TreeModule,
-        AngularSplitModule,
         DoobCoreModule,
         DoobCdkHelperModule,
         DoobGridModule,

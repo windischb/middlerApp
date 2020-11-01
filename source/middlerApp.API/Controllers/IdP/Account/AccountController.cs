@@ -12,16 +12,14 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using IdentityServer4.Test;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using middlerApp.API.Attributes;
 using middlerApp.API.Controllers.IdP.Account.ViewModels;
-using middlerApp.API.ExtensionMethods;
 using middlerApp.API.Helper;
-using middlerApp.API.IDP.Services;
+using middlerApp.IDP.Library.Services;
 
 namespace middlerApp.API.Controllers.IdP.Account
 {

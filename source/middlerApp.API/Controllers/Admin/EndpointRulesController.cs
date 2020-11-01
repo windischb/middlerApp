@@ -9,8 +9,9 @@ using middler.Action.Scripting;
 using middler.Common.SharedModels.Models;
 using middler.Core;
 using middlerApp.API.Attributes;
-using middlerApp.API.DataAccess;
-using middlerApp.API.DataAccess.ExtensionMethods;
+using middlerApp.API.ExtensionMethods;
+using middlerApp.Core.DataAccess.Entities.Models;
+using middlerApp.Core.Repository;
 using middlerApp.SharedModels;
 
 namespace middlerApp.API.Controllers.Admin

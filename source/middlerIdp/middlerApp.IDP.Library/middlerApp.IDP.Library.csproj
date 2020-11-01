@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+		<PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="4.0.1" />
+		<PackageReference Include="Reflectensions.Json" Version="4.6.2" />
+		<PackageReference Include="IdentityServer4" Version="4.1.1" />
+		<PackageReference Include="System.Reactive.Linq" Version="4.4.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\middlerApp.Events\middlerApp.Events.csproj" />
+	  <ProjectReference Include="..\middlerApp.IDP.DataAccess.Postgres\middlerApp.IDP.DataAccess.Postgres.csproj" />
+	  <ProjectReference Include="..\middlerApp.IDP.DataAccess.Sqlite\middlerApp.IDP.DataAccess.Sqlite.csproj" />
+	  <ProjectReference Include="..\middlerApp.IDP.DataAccess.SqlServer\middlerApp.IDP.DataAccess.SqlServer.csproj" />
+	  <ProjectReference Include="..\middlerApp.IDP.DataAccess\middlerApp.IDP.DataAccess.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Helper\" />
+	</ItemGroup>
+
+</Project>

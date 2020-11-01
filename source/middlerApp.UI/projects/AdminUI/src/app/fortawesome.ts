@@ -5,7 +5,7 @@ import { faAddressCard as farAddressCard, faPlayCircle, faPlusSquare, faStopCirc
 import {
   DashboardOutline, FolderOutline, SettingOutline, FieldBinaryOutline, DeleteOutline,
   ContainerOutline, OrderedListOutline, CodeOutline, FormOutline, RollbackOutline, SyncOutline,
-  UserAddOutline, LoginOutline, BugOutline
+  UserAddOutline, LoginOutline, BugOutline, LockOutline, UserOutline, MoreOutline
 } from '@ant-design/icons-angular/icons';
 export class FortAwesomeLib {
   Init(library: FaIconLibrary) {
@@ -45,7 +45,8 @@ export class FortAwesomeLib {
     ContainerOutline, OrderedListOutline, CodeOutline, FormOutline, RollbackOutline,
     SyncOutline, UserAddOutline,
     LoginOutline,
-    BugOutline
+    BugOutline, LockOutline, UserOutline,
+    MoreOutline
   ]
 
 }

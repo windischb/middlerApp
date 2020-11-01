@@ -6,18 +6,12 @@ using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Stores;
 using IdentityServer4.Validation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using middlerApp.API.Attributes;
-using middlerApp.API.Controllers.IdP.Account;
 using middlerApp.API.Controllers.IdP.Consent.ViewModels;
-using middlerApp.API.ExtensionMethods;
 using middlerApp.API.Helper;
-using middlerApp.API.IDP.Storage.Entities;
-using Client = IdentityServer4.Models.Client;
 
 namespace middlerApp.API.Controllers.IdP.Consent
 {

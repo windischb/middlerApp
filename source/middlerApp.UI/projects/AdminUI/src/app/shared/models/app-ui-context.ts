@@ -46,6 +46,8 @@ class AppUIButton {
 class AppUIContent {
     Scrollable: boolean = false;
     Container: boolean = false;
+
+    ShowAlways: boolean = false;
 }
 
 class AppUISideBar {

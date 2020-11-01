@@ -40,8 +40,16 @@ export class AppUIService {
         this._uiContext = this.BuildNewContext();
         this.router.events.subscribe(event => {
             if (event instanceof ChildActivationStart) {
+                
                 this._uiContext = this.BuildNewContext();
                 this.propagateChanges();
+                
+                if(event.snapshot.url.find(u => u.path == 'first-setup')) {
+                    this.Set(ui => {
+                        ui.Sidebar.Hide = true,
+                        ui.Content.ShowAlways = true
+                    })
+                }
             }
         });
 

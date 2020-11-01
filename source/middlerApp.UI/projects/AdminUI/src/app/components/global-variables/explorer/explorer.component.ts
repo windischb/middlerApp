@@ -8,6 +8,7 @@ import { DoobOverlayService, IOverlayHandle } from '@doob-ng/cdk-helper';
 import { AppUIService } from '@services';
 import { NzContextMenuService, NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
 import { NzFormatEmitEvent, NzTreeNodeOptions } from 'ng-zorro-antd/tree';
+import { NzResizeEvent } from 'ng-zorro-antd/resizable';
 
 @Component({
     selector: 'global-variables-explorer',
@@ -89,7 +90,7 @@ export class GlobalVariablesExplorerComponent {
             children: null
         }
 
-        if(node.Children) {
+        if (node.Children) {
             n.children = node.Children.map(c => this.NormalizeTreeNode(c));
         } else {
             n.isLeaf = true
@@ -223,6 +224,16 @@ export class GlobalVariablesExplorerComponent {
 
     nzEvent(event: NzFormatEmitEvent): void {
         console.log(event);
+    }
+
+    col = 8;
+    id = -1;
+
+    onResize({ col }: NzResizeEvent): void {
+        cancelAnimationFrame(this.id);
+        this.id = requestAnimationFrame(() => {
+            this.col = col!;
+        });
     }
 
 }

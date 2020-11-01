@@ -33,6 +33,7 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzElementPatchModule } from 'ng-zorro-antd/core/element-patch'
 import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzResizableModule } from 'ng-zorro-antd/resizable';
 
 const GlobalModules = [
     NzFormModule,
@@ -58,6 +59,7 @@ const GlobalModules = [
     NzPopoverModule,
     NzElementPatchModule,
     NzDividerModule,
+    NzResizableModule,
     
     DoobEditorModule,
     DoobCoreModule,

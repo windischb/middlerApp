@@ -135,6 +135,10 @@ export class EndpointRulesService {
         return this.http.put<EndpointRule>(`/api/endpoint-rules/${id}`, rule);
     }
 
+    public UpdateAction(action: EndpointAction) {
+        return this.http.put<EndpointAction>(`/api/endpoint-action/${action.Id}`, action);
+    }
+
     // public UpdatePartial(id: string, patchDocument: any) {
 
     //     const patchHeaders = new HttpHeaders({

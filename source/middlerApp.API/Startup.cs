@@ -1,28 +1,34 @@
+using System.Collections.Generic;
 using System.Reflection;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using middler.Action.Scripting;
+using middler.Action.UrlRewrite;
+using middler.Common.Actions.UrlRedirect;
 using middler.Common.SharedModels.Interfaces;
 using middler.Core;
 using middlerApp.API.Attributes;
-using middlerApp.API.DataAccess;
 using middlerApp.API.ExtensionMethods;
-using middlerApp.API.IDP;
+using middlerApp.API.Helper;
 using middlerApp.API.JsonConverters;
 using middlerApp.API.Middleware;
+using middlerApp.Core.DataAccess.Sqlite;
+using middlerApp.Core.Repository;
+using middlerApp.Core.Repository.ExtensionMethods;
+using middlerApp.IDP.Library;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using SignalARRR.Server;
 using SignalARRR.Server.ExtensionMethods;
+
 
 
 namespace middlerApp.API
@@ -60,8 +66,7 @@ namespace middlerApp.API
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
-            //services.AddSingleton<PartialViewResultExecutor>();
-
+            
             services.AddResponseCompression();
             services.AddSpaStaticFiles();
 
@@ -73,51 +78,60 @@ namespace middlerApp.API
                 options.PayloadSerializerSettings.Converters.Add(new StringEnumConverter());
                 options.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
-
-
-            //services.AddScoped<IAuthenticator, OAuthAuthenticator>();
             services.AddSignalARRR();
 
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-           
-
-            services.AddMiddlerIdentityServer(opt => opt.UseSqlServer("Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = MiddlerApp", sql => sql.MigrationsAssembly(this.GetType().Assembly.FullName)));
-            //services.AddAuthentication();
-
-            //services.AddSingleton<ICorsPolicyService>((container) => {
-            //    var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
-            //    return new DefaultCorsPolicyService(logger)
-            //    {
-            //        AllowAll = true
-                    
-            //    };
-            //});
+            services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(IdpConfiguration).Assembly);
 
             services.AddMiddler(options =>
                 options
-                    //.AddUrlRedirectAction()
-                    //.AddUrlRewriteAction()
+                    .AddUrlRedirectAction()
+                    .AddUrlRewriteAction()
                     .AddScriptingAction()
-
             );
 
-            services.AddDbContext<APPDbContext>(opt => opt.UseSqlServer("Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = MiddlerApp"));
+            var idpConfig = new IdpConfiguration()
+            {
+                AdminUIPostLogoutUris = new List<string>
+                {
+                    IdpUriGenerator.GenerateRedirectUri(sConfig.AdminSettings.ListeningIP,
+                        sConfig.AdminSettings.HttpsPort),
+                    IdpUriGenerator.GenerateRedirectUri(sConfig.AdminSettings.ListeningIP, 4200)
+                },
+                AdminUIRedirectUris = new List<string>
+                {
+                    IdpUriGenerator.GenerateRedirectUri(sConfig.AdminSettings.ListeningIP,
+                        sConfig.AdminSettings.HttpsPort),
+                    IdpUriGenerator.GenerateRedirectUri(sConfig.AdminSettings.ListeningIP, 4200)
+                }
+            };
 
-            
 
-            services.AddScoped<EndpointRuleRepository>();
-
-            services.AddMiddlerRepo<EFCoreMiddlerRepository>(ServiceLifetime.Scoped);
-
-            services.AddScoped<IVariablesRepository, VariablesRepository>();
-
-
-           
+            services.AddMiddlerServices(sConfig.DbSettings.Provider, sConfig.DbSettings.ConnectionString);
+            services.AddMiddlerIdentityServer(sConfig.DbSettings.Provider, sConfig.DbSettings.ConnectionString, idpConfig);
+            //services.AddDbContext<APPDbContext>(opt => opt.UseSqlServer("Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = MiddlerApp"));
+            //services.AddMiddlerServices("sqlserver", "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = MiddlerApp");
+            //services.AddMiddlerServices("postgres", "Host=10.0.0.22;Database=MiddlerApp;Username=postgres;Password=postgres");
+            //services.AddMiddlerServices("sqlite", "Data Source = file.sqlite3");
+            //services.AddCoreDbContextSqlServer("Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = MiddlerApp");
+            //services.AddMiddlerIdentityServer("sqlserver", "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = MiddlerApp", idpConfig);
+            //services.AddMiddlerIdentityServer("postgres",
+            //    "Host=10.0.0.22;Database=MiddlerApp;Username=postgres;Password=postgres", idpConfig);
+            //{
+            //    AdminUIPostLogoutUris = new List<string>
+            //    {
+            //        IdpUriGenerator.GenerateRedirectUri(sConfig.AdminSettings.ListeningIP, sConfig.AdminSettings.HttpsPort),
+            //        IdpUriGenerator.GenerateRedirectUri(sConfig.AdminSettings.ListeningIP, 4200)
+            //    },
+            //    AdminUIRedirectUris = new List<string>
+            //    {
+            //        IdpUriGenerator.GenerateRedirectUri(sConfig.AdminSettings.ListeningIP, sConfig.AdminSettings.HttpsPort),
+            //        IdpUriGenerator.GenerateRedirectUri(sConfig.AdminSettings.ListeningIP, 4200)
+            //    }
+            //});
 
             services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
-
-
+            
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 //options.ForwardLimit = 4;

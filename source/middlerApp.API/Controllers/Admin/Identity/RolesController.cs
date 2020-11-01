@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using IdentityServer4;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using middlerApp.API.Attributes;
-using middlerApp.API.IDP.DtoModels;
-using middlerApp.API.IDP.Services;
+using middlerApp.IDP.Library.DtoModels;
+using middlerApp.IDP.Library.Services;
 
 namespace middlerApp.API.Controllers.Admin.Identity
 {
@@ -69,10 +67,8 @@ namespace middlerApp.API.Controllers.Admin.Identity
         [HttpPut]
         public async Task<IActionResult> UpdateRole(MRoleDto roleDto)
         {
-            var roleInDB = await RolesService.GetRoleAsync(roleDto.Id);
-            var updated = _mapper.Map(roleDto, roleInDB);
-
-            await RolesService.UpdateRoleAsync(updated);
+           
+            await RolesService.UpdateRoleAsync(roleDto);
             return Ok();
         }
 

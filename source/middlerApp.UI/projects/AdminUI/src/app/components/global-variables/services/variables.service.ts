@@ -25,6 +25,7 @@ export class VariablesService {
         this.messages.RunOnEveryReconnect(() => this.GetFolderTree().subscribe())
 
         this.messages.Stream<any>("Variables.Subscribe").pipe(
+            tap(d => console.log(d)),
             mergeMap(item => this.GetFolderTree())
         ).subscribe()
 
@@ -38,7 +39,7 @@ export class VariablesService {
             .pipe(
                 take(1),
                 tap(node => {
-                    //console.log(node)
+                    console.log(node)
                     this.rootNodeSubject$.next(node);
                 })
             );

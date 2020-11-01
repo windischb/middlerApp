@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using IdentityServer4;
 using IdentityServer4.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using middlerApp.API.Attributes;
 using middlerApp.API.Controllers.Admin.Identity.ViewModels;
-using middlerApp.API.IDP.DtoModels;
-using middlerApp.API.IDP.Models;
-using middlerApp.API.IDP.Services;
+using middlerApp.IDP.DataAccess.Entities.Models;
+using middlerApp.IDP.Library.DtoModels;
+using middlerApp.IDP.Library.Services;
 
 namespace middlerApp.API.Controllers.Admin.Identity
 {
@@ -24,17 +22,20 @@ namespace middlerApp.API.Controllers.Admin.Identity
         private readonly IMapper _mapper;
         private readonly ILocalUserService _localUserService;
         private readonly IIdentityServerInteractionService _interaction;
+        private readonly IRolesService _rolesService;
 
 
         public UsersController(ILocalUserService localUserService,
             IIdentityServerInteractionService interaction,
             IUsersService usersService,
+            IRolesService rolesService,
             IMapper mapper)
         {
             UsersService = usersService;
             _mapper = mapper;
             _localUserService = localUserService;
             _interaction = interaction;
+            _rolesService = rolesService;
         }
 
         [HttpGet]
@@ -83,22 +84,7 @@ namespace middlerApp.API.Controllers.Admin.Identity
         [HttpPut]
         public async Task<IActionResult> UpdateUser(MUserDto updateUserDto)
         {
-            var userInDB = await UsersService.GetUserAsync(updateUserDto.Id);
-            //var userModel = _mapper.Map<MUser>(updateUserDto);
-            var updated = _mapper.Map(updateUserDto, userInDB);
-
-            
-
-            //foreach (var mRoleDto in updateUserDto.Roles)
-            //{
-            //    var exists = updated.UserRoles.Select(ur => ur.RoleId).Contains(mRoleDto.Id);
-            //    if (!exists)
-            //    {
-            //        updated.UserRoles.Add(new MUserRoles(){RoleId = mRoleDto.Id});
-            //    }
-            //}
-
-            await UsersService.UpdateUserAsync(updated);
+            await UsersService.UpdateUserAsync(updateUserDto);
             return Ok();
         }
 

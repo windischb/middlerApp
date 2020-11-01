@@ -477,10 +477,13 @@ export class EndpointActionsListComponent implements OnInit, ControlValueAccesso
                         action.Parameters = context.payload;
                         this.actions = [...this.actions];
                         this.propagateChange(this.actions);
-                        // const patchDoc = this.generatePatchDocument(origAction, action);
-                        // this.rulesService.PatchAction(this.ruleId, origAction.Id, patchDoc).subscribe(_ => {
-                        //     this.actions = [...this.actions];
-                        // })
+                        context.handle.Close();
+                    })
+                    .AddEventHandler("Save", context => {
+                        action.Parameters = context.payload;
+                        this.actions = [...this.actions];
+                        this.propagateChange(this.actions);
+                        this.rulesService.UpdateAction(action).subscribe()
                     }).Open()
                 break;
             }

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { AppInitializeService } from './app-initialize.service';
 import { AppUIService, AuthenticationService } from '@services';
 import { tap, share, map, filter } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { ActivatedRoute, Router, RouterLink, NavigationEnd } from '@angular/rout
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
 
     uiContext$ = this.uiService.UIContext$;
     sideBarCollapsed$ = this.uiService.sideBarCollapsed$;
@@ -32,7 +32,7 @@ export class AppComponent {
         })
     );
 
-    constructor(private uiService: AppUIService, private router: Router, private auth: AuthenticationService) {
+    constructor(private uiService: AppUIService, private router: Router, private auth: AuthenticationService, private route: ActivatedRoute, private cref: ChangeDetectorRef) {
 
         uiService.SetDefault(ui => {
             ui.Content.Scrollable = false;
@@ -41,24 +41,24 @@ export class AppComponent {
             ui.Footer.Show = false;
         })
 
-
-        // this.router.events.pipe(
-        //     map(s => {
-        //         if (s instanceof NavigationEnd) {
-        //             return location.pathname;
-        //         }
-        //         return null;
-        //     }),
-        //     filter(p => Boolean(p))
-        // ).subscribe(path => {
-        //     if(path.startsWith("/identity/")){
-        //         this.identity = true;
-        //     }
-        // });
-
-
+        
+               
+        
     }
-
+    ngAfterViewInit(): void {
+        
+        // if(location.pathname == "/first-setup") {
+        //     setTimeout(() => {
+        //         this.uiService.Set(ui => {
+        //             ui.Sidebar.Hide = true;
+        //             ui.Content.ShowAlways = true;
+        //             this.cref.detectChanges();
+        //         })
+        //     }, 1000);
+            
+        // }
+    }
+    
     identity = false;
 
     toggleSideBar() {

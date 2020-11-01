@@ -8,7 +8,6 @@ using IdentityServer4;
 using IdentityServer4.Events;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using IdentityServer4.Test;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,8 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using middlerApp.API.ExtensionMethods;
 using middlerApp.API.Helper;
-using middlerApp.API.IDP.Models;
-using middlerApp.API.IDP.Services;
+using middlerApp.IDP.DataAccess.Entities.Models;
+using middlerApp.IDP.Library.Services;
 
 namespace middlerApp.API.Controllers.IdP.Account
 {

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using IdentityServer4.Hosting.LocalApiAuthentication;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
-using middlerApp.API.IDP.LocalTokenAuthenticatonHandler;
 using SignalARRR.Server;
 
 namespace middlerApp.API

@@ -1,4 +1,4 @@
-<div style="flex-grow:1">
+<!-- <div style="flex-grow:1">
     <as-split direction="horizontal" unit="pixel" gutterSize="5">
 
         <as-split-area minSize="200" size="200"
@@ -17,12 +17,14 @@
                             <div style="display:flex; flex-direction:row; padding-left: 5px;">
                                 <div class="expander-area" *ngIf="node.hasChildren"
                                     (click)="clickFolderExpander(node, $event)" style="width: 20px; padding-left: 6px;">
-                                    <fa-icon nz-icon [icon]="['fas', 'angle-right']" style="margin-top:6px; width: 8px;" *ngIf="!node.isExpanded"></fa-icon>
-                                    <fa-icon nz-icon [icon]="['fas', 'angle-down']" style="margin-top:6px; width: 8px;" *ngIf="node.isExpanded"></fa-icon>
-                                    <!-- <i class="fitted angle right icon" style="padding-top:3px; width: 8px;"
+                                    <fa-icon nz-icon [icon]="['fas', 'angle-right']" style="margin-top:6px; width: 8px;"
+                                        *ngIf="!node.isExpanded"></fa-icon>
+                                    <fa-icon nz-icon [icon]="['fas', 'angle-down']" style="margin-top:6px; width: 8px;"
+                                        *ngIf="node.isExpanded"></fa-icon>
+                                    <i class="fitted angle right icon" style="padding-top:3px; width: 8px;"
                                         *ngIf="!node.isExpanded"></i>
                                     <i class="fitted angle down icon" style="padding-top:3px; width: 8px;"
-                                        *ngIf="node.isExpanded"></i> -->
+                                        *ngIf="node.isExpanded"></i>
                                 </div>
                                 <div *ngIf="!node.hasChildren" style="width: 20px; padding-left: 6px;">
 
@@ -66,6 +68,76 @@
         </as-split-area>
     </as-split>
 
+</div> -->
+
+<div nz-row style="flex-grow: 1;">
+    <div class="col" nz-col nz-resizable (nzResize)="onResize($event)" [nzMinColumn]="3" [nzMaxColumn]="20" [nzGridColumnCount]="24" [nzSpan]="col"
+    style="display: flex; flex-direction: column; flex-grow: 1;overflow: hidden;background-color: #d6d6d6;">
+    <nz-resize-handle nzDirection="right" style="background: #eaeaeb; width: 4px; right: 0px">
+        <div class="right-wrap">
+          <i class="right" nz-icon nzType="more" nzTheme="outline"></i>
+        </div>
+      </nz-resize-handle>
+        <div style="display: flex; flex-direction: column; flex-grow: 1;overflow: hidden;">
+
+            <tree-root [(state)]="FolderTreeState" [nodes]="(nodes$ | async) || []" [options]="options"
+                style="flex-grow: 1; overflow: hidden;" (contextmenu)="openFolderContextMenu($event)" #tree>
+
+                <ng-template #treeNodeWrapperTemplate let-node let-index="index">
+                    <div class="node-wrapper" xaStopClickPropagation
+                        [class.selected]="(variablesService.SelectedFolder$ | async)?.Path == node.data.Path"
+                        [style.padding-left]="node.getNodePadding()" (click)="node.mouseAction('click', $event)"
+                        (contextmenu)="node.mouseAction('contextMenu', $event)">
+
+                        <div style="display:flex; flex-direction:row; padding-left: 5px;">
+                            <div class="expander-area" *ngIf="node.hasChildren"
+                                (click)="clickFolderExpander(node, $event)" style="width: 20px; padding-left: 6px;">
+                                <fa-icon nz-icon [icon]="['fas', 'angle-right']" style="margin-top:6px; width: 8px;" *ngIf="!node.isExpanded"></fa-icon>
+                                <fa-icon nz-icon [icon]="['fas', 'angle-down']" style="margin-top:6px; width: 8px;" *ngIf="node.isExpanded"></fa-icon>
+                                <i class="fitted angle right icon" style="padding-top:3px; width: 8px;"
+                                    *ngIf="!node.isExpanded"></i>
+                                <i class="fitted angle down icon" style="padding-top:3px; width: 8px;"
+                                    *ngIf="node.isExpanded"></i>
+                            </div>
+                            <div *ngIf="!node.hasChildren" style="width: 20px; padding-left: 6px;">
+
+                            </div>
+                            <div class="node-content-wrapper" [class.node-content-wrapper-active]="node.isActive"
+                                [class.node-content-wrapper-focused]="node.isFocused"
+                                (dblclick)="node.mouseAction('dblClick', $event)"
+                                (contextmenu)="node.mouseAction('contextMenu', $event)"
+                                (treeDrop)="node.onDrop($event)" [treeAllowDrop]="node.allowDrop" [treeDrag]="node"
+                                [treeDragEnabled]="node.allowDrag()">
+                                <div class="ui input" *ngIf="node.data.edit">
+                                    <input [value]="node.data.Name" [dbSetFocus]
+                                        [dbAllowedCharacters]="'[a-zA-Z0-9_]'" #nameinput
+                                        style="width: 95%; padding: 2px 5px;"
+                                        (keydown.enter)="saveName(node, nameinput, $event)"
+                                        (keydown.escape)="cancelCreateOrRenameFolder(node, $event)"
+                                        (focus)="SelectIfCreateFolder(node, $event)" />
+                                </div>
+                                <tree-node-content *ngIf="!node.data.edit"
+                                    [class.selected]="(variablesService.SelectedFolder$ | async)?.Path == node.data.Path"
+                                    [node]="node" [index]="index"></tree-node-content>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+
+
+            </tree-root>
+        </div>
+    </div>
+    <div class="col right" nz-col [nzSpan]="24 - col"
+    style="display: flex; flex-direction: column; flex-grow: 1;overflow: hidden; padding: 4px 4px 4px 0px">
+        <div
+                style="background-color: #292f3b; color: white; font-weight: bold; font-size: 1.2rem;line-height: 2rem; padding-left: 14px;">
+                {{SelectedFolderPath$ | async}}</div>
+            <variables-folder-content *ngIf="SelectedFolderPath$ | async; let path" [Items]="ItemsInPath$ | async"
+                [Path]="path">
+            </variables-folder-content>
+    
+    </div>
 </div>
 
 <ng-template #empty>
@@ -93,7 +165,7 @@
 
 </ng-template> -->
 <ng-template #folderContextMenu let-context>
-   
+
     <ul nz-menu nzMode="vertical" class="context-menu">
         <div class="context-menu-header">
             {{context.Folder?.Name || "/"}}
