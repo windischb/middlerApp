@@ -41,7 +41,6 @@ using SignalARRR.Server;
 using SignalARRR.Server.ExtensionMethods;
 using DecimalJsonConverter = middlerApp.API.JsonConverters.DecimalJsonConverter;
 using ExpandoObjectConverter = Newtonsoft.Json.Converters.ExpandoObjectConverter;
-using Worker.Scripter.Module;
 
 namespace middlerApp.API
 {
@@ -119,9 +118,7 @@ namespace middlerApp.API
                     .AddPowerShellCoreEngine()
                     .AddModulePlugins()
                     .AddDefaultScripterModules()
-                    //.AddScripterModule<WorkerClientModule>()
-                    
-                    //.AddScripterModule<VariablesModule>()
+                //.AddScripterModule<VariablesModule>()
                     //.AddScripterModule<TaskHelperModule>()
                    
             );

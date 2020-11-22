@@ -72,11 +72,5 @@
     </None>
   </ItemGroup>
 
-	<ItemGroup>
-	  <Reference Include="Worker.Scripter.Module">
-	    <HintPath>..\..\..\WorkerService1\Worker.Scripter.Module\bin\Debug\netstandard2.0\Worker.Scripter.Module.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
-
  
 </Project>
