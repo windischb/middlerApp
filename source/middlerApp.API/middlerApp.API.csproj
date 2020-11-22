@@ -7,30 +7,41 @@
     <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
     <!--<DebugSymbols>false</DebugSymbols>-->
     <!--<DebugType>None</DebugType>-->
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Collection" Version="7.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+    <PackageReference Include="McMaster.NETCore.Plugins" Version="1.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" />
     
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0-rc.2.20475.17" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="5.0.0-rc.2.20475.17" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.0-rc.2.20475.17" />
-    <PackageReference Include="middler.Action.Scripting" Version="1.0.0" />
-    <PackageReference Include="middler.Action.UrlRedirect" Version="1.0.0" />
-    <PackageReference Include="middler.Action.UrlRewrite" Version="1.0.0" />
-    <PackageReference Include="middler.Core" Version="1.0.0" />
-    <PackageReference Include="Reflectensions.Json" Version="4.6.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.0" />
+    <PackageReference Include="middler.Action.Scripting" Version="1.7.1" />
+    <PackageReference Include="middler.Action.UrlRedirect" Version="1.7.1" />
+    <PackageReference Include="middler.Action.UrlRewrite" Version="1.7.1" />
+    <PackageReference Include="middler.TaskHelper.ScripterModule" Version="1.7.1" />
+    <PackageReference Include="middler.Variables.ScripterModule" Version="1.7.1" />
+    <PackageReference Include="Reflectensions.Json" Version="4.7.0" />
+    <PackageReference Include="Scripter" Version="1.7.2" />
+    <PackageReference Include="Scripter.Engine.JavaScript" Version="1.7.0" />
+    <PackageReference Include="Scripter.Engine.PowerShellCore" Version="1.7.0" />
+    <PackageReference Include="Scripter.Engine.TypeScript" Version="1.7.0" />
+    <PackageReference Include="Scripter.Modules.Default" Version="1.7.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     
 
 
-    <PackageReference Include="SignalARRR.Server" Version="2.1.0" />
+    <PackageReference Include="SignalARRR.Server" Version="2.2.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\middlerApp.Agents.Shared\middlerApp.Agents.Shared.csproj" />
+    <ProjectReference Include="..\..\middlerApp.Ldap\middlerApp.Ldap.csproj" />
     <ProjectReference Include="..\middlerCore\middlerApp.Core.DataAccess.Sqlite\middlerApp.Core.DataAccess.Sqlite.csproj" />
     <ProjectReference Include="..\middlerCore\middlerApp.Core.DataAccess.SqlServer\middlerApp.Core.DataAccess.SqlServer.csproj" />
     <ProjectReference Include="..\middlerIdp\middlerApp.IDP.Library\middlerApp.IDP.Library.csproj" />
@@ -60,6 +71,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Worker.Scripter.Module">
+	    <HintPath>..\..\..\WorkerService1\Worker.Scripter.Module\bin\Debug\netstandard2.0\Worker.Scripter.Module.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
 
  
 </Project>

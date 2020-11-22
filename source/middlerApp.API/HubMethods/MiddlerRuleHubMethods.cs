@@ -43,15 +43,15 @@ namespace middlerApp.API.HubMethods {
 
         public List<KeyValuePair<string, string>> GetTypings()
         {
-            var typings =
-                Directory.GetFileSystemEntries(PathHelper.GetFullPath(@"TypeDefinitions"))
-                    .Select(fe =>
-                    {
-                        var f = new FileInfo(fe);
-                        return new KeyValuePair<string, string>(f.Name, File.ReadAllText(fe));
-                    }).ToList();
+            //var typings =
+            //    Directory.GetFileSystemEntries(PathHelper.GetFullPath(@"TypeDefinitions"))
+            //        .Select(fe =>
+            //        {
+            //            var f = new FileInfo(fe);
+            //            return new KeyValuePair<string, string>(f.Name, File.ReadAllText(fe));
+            //        }).ToList();
 
-            return typings;
+            return new List<KeyValuePair<string, string>>();
         }
 
 

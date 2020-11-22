@@ -12,6 +12,7 @@ using middlerApp.IDP.DataAccess;
 using middlerApp.IDP.DataAccess.Entities.Models;
 using middlerApp.IDP.DataAccess.SqlServer;
 using middlerApp.IDP.Library.DtoModels;
+using Reflectensions.ExtensionMethods;
 
 namespace middlerApp.IDP.Library.Services
 {
@@ -63,7 +64,7 @@ namespace middlerApp.IDP.Library.Services
                 return false;
             }
 
-            var user = await GetUserByUserNameAsync(userName);
+            var user = await GetUserByUserNameOrEmailAsync(userName);
 
             if (user == null)
             {
@@ -88,7 +89,9 @@ namespace middlerApp.IDP.Library.Services
                 return false;
             }
 
-            var user = await GetUserByUserNameAsync(userName);
+            var user = await GetUserByUserNameOrEmailAsync(userName);
+            
+            
 
             if (user == null)
             {
@@ -96,6 +99,11 @@ namespace middlerApp.IDP.Library.Services
             }
 
             if (!user.Active)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(user.Password))
             {
                 return false;
             }
@@ -108,16 +116,27 @@ namespace middlerApp.IDP.Library.Services
             return (verificationResult == PasswordVerificationResult.Success);
         }
 
-        public async Task<MUser> GetUserByUserNameAsync(string userName)
+        public async Task<MUser> GetUserByUserNameOrEmailAsync(string userName)
         {
             if (string.IsNullOrWhiteSpace(userName))
             {
                 throw new ArgumentNullException(nameof(userName));
             }
 
-            return await _context.Users.AsQueryable()
-                 .FirstOrDefaultAsync(u => u.UserName == userName);
+            if (userName.IsValidEmailAddress())
+            {
+                return await _context.Users.AsQueryable()
+                    .FirstOrDefaultAsync(u => u.Email == userName);
+            }
+            else
+            {
+                return await _context.Users.AsQueryable()
+                    .FirstOrDefaultAsync(u => u.UserName == userName);
+            }
+
+            
         }
+        
 
         public async Task<IEnumerable<MUserClaim>> GetUserClaimsBySubjectAsync(string subject)
         {
@@ -139,6 +158,7 @@ namespace middlerApp.IDP.Library.Services
             return await _context.Users
                 .Include(u => u.Roles)
                 .Include(u => u.Claims)
+                .Include(u => u.ExternalClaims)
                 .FirstOrDefaultAsync(u => u.Subject == subject);
         }
 

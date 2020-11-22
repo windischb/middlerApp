@@ -1,18 +1,29 @@
 ﻿using System;
+using System.Net.Http;
+using IdentityModel.AspNetCore.AccessTokenValidation;
+using IdentityModel.AspNetCore.OAuth2Introspection;
 using IdentityServer4;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using middlerApp.Events;
 using middlerApp.IDP.DataAccess.Entities.Models;
 using middlerApp.IDP.DataAccess.Postgres;
 using middlerApp.IDP.DataAccess.Sqlite;
 using middlerApp.IDP.DataAccess.SqlServer;
+using middlerApp.IDP.Library.LocalTokenAuthenticatonHandler;
 using middlerApp.IDP.Library.Services;
 using middlerApp.IDP.Library.Storage.Stores;
+using middlerApp.IDP.Library.Validators;
 
 namespace middlerApp.IDP.Library
 {
@@ -39,14 +50,14 @@ namespace middlerApp.IDP.Library
                         break;
                     }
                 case "postgres":
-                {
-                    PostgresServiceBuilder.AddCoreDbContext(services, connectionstring);
-                    break;
-                }
+                    {
+                        PostgresServiceBuilder.AddCoreDbContext(services, connectionstring);
+                        break;
+                    }
                 default:
-                {
+                    {
                         throw new NotSupportedException($"Database Provider '{provider}' is not supported!");
-                }
+                    }
             }
 
             services.AddSingleton<DataEventDispatcher>();
@@ -59,7 +70,7 @@ namespace middlerApp.IDP.Library
             services.AddScoped<IApiResourcesService, ApiResourcesService>();
             services.AddScoped<IIdentityResourcesService, IdentityResourcesService>();
             services.AddScoped<IApiScopesService, ApiScopesService>();
-
+            services.AddScoped<IAuthenticationProviderService, AuthenticationProviderService>();
 
 
             //services.AddScoped<IAuthorizationCodeStore, AuthorizationCodeStore>();
@@ -71,6 +82,9 @@ namespace middlerApp.IDP.Library
                     options.UserInteraction.ConsentUrl = "/consent";
                     options.UserInteraction.LogoutUrl = "/logout";
                     options.UserInteraction.ErrorUrl = "/error";
+
+                    options.Authentication.CookieAuthenticationScheme = "ids";
+                    
                 })
                 .AddDeveloperSigningCredential()
                 .AddCorsPolicyService<MCorsPolicyService>()
@@ -81,51 +95,64 @@ namespace middlerApp.IDP.Library
                 //.AddClientConfigurationValidator<CustomClientConfigurationValidator>()
                 .AddProfileService<LocalUserProfileService>()
                 .AddResourceValidator<MResourceValidator>()
-                .AddAuthorizeInteractionResponseGenerator<MAuthorizeInteractionResponseGenerator>();
+                .AddAuthorizeInteractionResponseGenerator<MAuthorizeInteractionResponseGenerator>()
+                .AddSecretValidator<CustomHashedSharedSecretValidator>()
+                ;
 
 
             services.AddTransient<ICorsPolicyService, MCorsPolicyService>();
             services.AddTransient<IUserInfoResponseGenerator, MUserInfoResponseGenerator>();
             services.AddTransient<ICustomTokenValidator, MCustomTokenValidator>();
-            services.AddAuthentication().AddLocalApi(options =>
-            {
-                options.ExpectedScope = "IdentityServerApi";
-            });
+            services.AddTransient<IApiSecretValidator, CustomApiSecretValidator>();
+            services.AddTransient<ISecretsListValidator, CustomSecretValidator>();
 
-            //services.AddAuthentication().AddLocalAccessTokenValidation();
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = "Bearer";
+                    options.DefaultChallengeScheme = "Bearer";
+                    options.DefaultSignInScheme = "ids";
+                    options.DefaultSignOutScheme = "ids";
 
+                })
+                .AddCookie("ids")
+                .AddJwtBearer(o =>
+                {
+                    o.Authority = "https://localhost:4445";
+                    o.RequireHttpsMetadata = false;
+                    o.ForwardDefaultSelector = Selector.ForwardReferenceToken("introspection");
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false
+                    };
 
-            //services.AddAuthentication().AddJwtBearer("Bearer", options =>
-            //{
-            //    var handler = new SocketsHttpHandler();
-            //    handler.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, errors) => true;
-            //    options.BackchannelHttpHandler = handler;
+                })
+                .AddOAuth2Introspection("introspection", options =>
+                {
+                    options.Authority = "https://localhost:4445";
 
-            //    options.Authority = "https://localhost:4445";
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateAudience = false
-            //    };
-            //});
+                    options.ClientId = "api";
+                    options.ClientSecret = "ABC12abc!";
+                    options.EnableCaching = true;
+                    options.CacheDuration = TimeSpan.FromMinutes(10);
+                    options.Events = new OAuth2IntrospectionEvents();
+                    options.Events.OnAuthenticationFailed = async context =>
+                    {
+                        context.HttpContext.Response.Headers["Warning"] = context.Error;
+                    };
 
-            //services.AddAuthentication().AddOAuth2Introspection("IdentityServerAccessToken", options =>
-            //{
-
-            //    options.Authority = "https://localhost:4445";
-
-            //    options.ClientId = "IdentityServerApi";
-            //    options.ClientSecret = "test";
-
-            //});
-
+                });
+                //.AddNegotiate("Windows", "Windows Authentication", options =>
+                //{
+                //    options.PersistKerberosCredentials = false;
+                    
+                //});
 
             services.AddAuthorization((options) =>
             {
-                options.AddPolicy(IdentityServerConstants.LocalApi.PolicyName, policy =>
+                options.AddPolicy("Admin", policy =>
                 {
-                    policy.AddAuthenticationSchemes(IdentityServerConstants.LocalApi.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole("IdentityServerAdmin");
+                    policy.RequireRole("Administrators");
                 });
             });
 
@@ -135,5 +162,7 @@ namespace middlerApp.IDP.Library
             services.AddHostedService<EnsureDefaultResourcesExistsService>();
 
         }
+
+
     }
 }

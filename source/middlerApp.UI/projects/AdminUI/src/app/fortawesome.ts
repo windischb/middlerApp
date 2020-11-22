@@ -1,11 +1,11 @@
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faAddressCard, faAngleDoubleRight, faChevronLeft, faChevronRight, faCube, faCubes, faDesktop, 
-  faEllipsisV, faStream, faToggleOff, faToggleOn, faUser, faUsers, faUsersCog, faUserTag, faKey } from '@fortawesome/free-solid-svg-icons';
+  faEllipsisV, faStream, faToggleOff, faToggleOn, faUser, faUsers, faUsersCog, faUserTag, faKey, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 import { faAddressCard as farAddressCard, faPlayCircle, faPlusSquare, faStopCircle } from '@fortawesome/free-regular-svg-icons';
 import {
   DashboardOutline, FolderOutline, SettingOutline, FieldBinaryOutline, DeleteOutline,
   ContainerOutline, OrderedListOutline, CodeOutline, FormOutline, RollbackOutline, SyncOutline,
-  UserAddOutline, LoginOutline, BugOutline, LockOutline, UserOutline, MoreOutline
+  UserAddOutline, LoginOutline, BugOutline, LockOutline, UserOutline, MoreOutline, MenuUnfoldOutline
 } from '@ant-design/icons-angular/icons';
 export class FortAwesomeLib {
   Init(library: FaIconLibrary) {
@@ -31,7 +31,8 @@ export class FortAwesomeLib {
       faChevronLeft,
       faChevronRight,
       faKey,
-      faStopCircle
+      faStopCircle,
+      faShieldAlt
     )
 
   }
@@ -46,7 +47,7 @@ export class FortAwesomeLib {
     SyncOutline, UserAddOutline,
     LoginOutline,
     BugOutline, LockOutline, UserOutline,
-    MoreOutline
+    MoreOutline, MenuUnfoldOutline
   ]
 
 }

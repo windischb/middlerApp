@@ -3,7 +3,7 @@ import { ScriptModalComponent } from './script-modal.component';
 
 
 export class ScriptParameters {
-    Language: "Javascript" | "Typescript" | "Powershell" = "Typescript";
+    Language: "JavaScript" | "TypeScript" | "PowerShellCore" = "TypeScript";
     SourceCode: string;
 }
 

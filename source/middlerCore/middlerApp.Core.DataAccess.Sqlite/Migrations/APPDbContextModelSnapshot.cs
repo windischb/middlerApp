@@ -14,7 +14,7 @@ namespace middlerApp.Core.DataAccess.Sqlite.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.0-rc.2.20475.6");
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointActionEntity", b =>
                 {
@@ -82,6 +82,40 @@ namespace middlerApp.Core.DataAccess.Sqlite.Migrations
                     b.ToTable("EndpointRules");
                 });
 
+            modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointRulePermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AccessMode")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Client")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("EndpointRuleEntityId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Order")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PrincipalName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SourceAddress")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EndpointRuleEntityId");
+
+                    b.ToTable("EndpointRulePermission");
+                });
+
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.TreeNode", b =>
                 {
                     b.Property<Guid>("Id")
@@ -114,6 +148,23 @@ namespace middlerApp.Core.DataAccess.Sqlite.Migrations
                     b.ToTable("Variables");
                 });
 
+            modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.TypeDefinition", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Module")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TypeDefinitions");
+                });
+
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointActionEntity", b =>
                 {
                     b.HasOne("middlerApp.Core.DataAccess.Entities.Models.EndpointRuleEntity", null)
@@ -123,9 +174,18 @@ namespace middlerApp.Core.DataAccess.Sqlite.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointRulePermission", b =>
+                {
+                    b.HasOne("middlerApp.Core.DataAccess.Entities.Models.EndpointRuleEntity", null)
+                        .WithMany("Permissions")
+                        .HasForeignKey("EndpointRuleEntityId");
+                });
+
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointRuleEntity", b =>
                 {
                     b.Navigation("Actions");
+
+                    b.Navigation("Permissions");
                 });
 #pragma warning restore 612, 618
         }

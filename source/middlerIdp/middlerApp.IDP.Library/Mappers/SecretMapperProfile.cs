@@ -3,8 +3,11 @@
 
 
 using AutoMapper;
+using IdentityModel;
+using IdentityServer4.Models;
 using middlerApp.IDP.DataAccess.Entities.Entities;
 using middlerApp.IDP.Library.DtoModels;
+using Secret = middlerApp.IDP.DataAccess.Entities.Entities.Secret;
 
 namespace middlerApp.IDP.Library.Mappers
 {

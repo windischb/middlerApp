@@ -4,6 +4,8 @@
 
 using System;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4;
@@ -19,7 +21,10 @@ using Microsoft.AspNetCore.Mvc;
 using middlerApp.API.Attributes;
 using middlerApp.API.Controllers.IdP.Account.ViewModels;
 using middlerApp.API.Helper;
+using middlerApp.API.Providers;
+using middlerApp.IDP.DataAccess.Entities.Models;
 using middlerApp.IDP.Library.Services;
+using Reflectensions.ExtensionMethods;
 
 namespace middlerApp.API.Controllers.IdP.Account
 {
@@ -34,25 +39,31 @@ namespace middlerApp.API.Controllers.IdP.Account
     public class AccountController : Controller
     {
         private readonly ILocalUserService _localUserService;
+        private readonly AuthenticationProviderContextService _authenticationProvider;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
+        private readonly IUsersService _usersService;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
+            IUsersService usersService,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
-            ILocalUserService localUserService)
+            ILocalUserService localUserService,
+            AuthenticationProviderContextService authenticationProvider)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
             // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
             _localUserService = localUserService
                                 ?? throw new ArgumentNullException(nameof(localUserService));
+            _authenticationProvider = authenticationProvider;
 
             _interaction = interaction;
             _clientStore = clientStore;
+            _usersService = usersService;
             _schemeProvider = schemeProvider;
             _events = events;
         }
@@ -77,6 +88,79 @@ namespace middlerApp.API.Controllers.IdP.Account
             // build a model so we know what to show on the login page
             var vm = await BuildLoginViewModelAsync(returnUrl);
             return Ok(vm);
+        }
+
+        [HttpPost("login-external")]
+        
+        public async Task<IActionResult> LoginExternal([FromBody] ExternalLoginModel model)
+        {
+            var resultmodel = new LoginResultModel();
+            resultmodel.ReturnUrl = model.ReturnUrl;
+
+            // we will issue the external cookie and then redirect the
+            // user back to the external callback, in essence, treating windows
+            // auth the same as any other external authentication mechanism
+            var props = new AuthenticationProperties()
+            {
+                RedirectUri = model.ReturnUrl,
+                Items =
+                {
+                    { "returnUrl", model.ReturnUrl },
+                    { "scheme", model.Scheme },
+                }
+            };
+
+            
+            // see if windows auth has already been requested and succeeded
+            AuthenticateResult result = await HttpContext.AuthenticateAsync(model.Scheme);
+            if (result.Principal != null)
+            {
+                var authHandler = _authenticationProvider.GetHandler(model.Scheme);
+
+                var factory = authHandler.GetUserFactory(result.Principal);
+                
+                var subject = factory.GetSubject();
+
+                var mUser = await _localUserService.GetUserBySubjectAsync(subject);
+                if (mUser == null)
+                {
+                    mUser = factory.BuildUser();
+
+                    await _localUserService.AddUserAsync(mUser);
+                    
+                }
+                else
+                {
+                    factory.UpdateClaims(mUser);
+                    await _usersService.UpdateUserAsync(mUser);
+                }
+
+                await HttpContext.SignInAsync(new IdentityServerUser(mUser.Subject)
+                {
+                    DisplayName = mUser.UserName,
+                    IdentityProvider = model.Scheme,
+                    AuthenticationTime = DateTime.Now
+                });
+
+                await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+
+
+                if (_interaction.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
+                {
+                    return Ok(resultmodel.WithStatus(Status.Ok));
+                }
+
+                resultmodel.ReturnUrl = "/";
+                return Ok(resultmodel.WithStatus(Status.Ok));
+
+            }
+            else
+            {
+                // trigger windows auth
+                // since windows auth don't support the redirect uri,
+                // this URL is re-triggered when we call challenge
+                return Challenge(model.Scheme);
+            }
         }
 
         /// <summary>
@@ -115,7 +199,7 @@ namespace middlerApp.API.Controllers.IdP.Account
 
             if (await _localUserService.ValidateCredentialsAsync(model.Username, model.Password))
             {
-                var user = await _localUserService.GetUserByUserNameAsync(model.Username);
+                var user = await _localUserService.GetUserByUserNameOrEmailAsync(model.Username);
                 await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Subject, user.UserName, clientId: context?.Client.ClientId));
 
                 // only set explicit expiration here if user chooses "remember me". 
@@ -168,6 +252,7 @@ namespace middlerApp.API.Controllers.IdP.Account
 
             if (vm.ShowLogoutPrompt == false)
             {
+                await HttpContext.SignOutAsync();
                 // no need to show prompt
                 return await Logout(resultModel);
             }

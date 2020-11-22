@@ -15,6 +15,7 @@ namespace middlerApp.IDP.Library.DtoModels
         [Required]
         public string Value { get; set; }
 
+
         public string ConcurrencyStamp { get; set; }
 
     }

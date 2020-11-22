@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using middler.Common.SharedModels.Enums;
 using middler.Common.SharedModels.Models;
 using middlerApp.Core.DataAccess.Entities.Models;
+using Reflectensions.HelperClasses;
 
 namespace middlerApp.Core.Repository.ExtensionMethods
 {
@@ -17,7 +20,8 @@ namespace middlerApp.Core.Repository.ExtensionMethods
             mRule.Path = entity.Path;
             mRule.Scheme = MappingHelper.Split(entity.Scheme);
             mRule.HttpMethods = MappingHelper.Split(entity.HttpMethods);
-            mRule.Actions = entity.Actions.Select(ToMiddlerAction).ToList();
+            mRule.Actions = entity.Actions.OrderBy(p => p.Order).Select(ToMiddlerAction).ToList();
+            mRule.Permissions = entity.Permissions.OrderBy(p => p.Order).Select(ToMiddlerPermissionRule).ToList();
 
             return mRule;
         }
@@ -35,6 +39,16 @@ namespace middlerApp.Core.Repository.ExtensionMethods
             return mAction;
         }
 
+        public static MiddlerRulePermission ToMiddlerPermissionRule(this EndpointRulePermission entity)
+        {
+            var mPerm = new MiddlerRulePermission();
+            mPerm.Type = Enum<PrincipalType>.Find(entity.Type);
+            mPerm.AccessMode = Enum<AccessMode>.Find(entity.AccessMode);
+            mPerm.Client = entity.Client;
+            mPerm.PrincipalName = entity.PrincipalName;
+            mPerm.SourceAddress = entity.SourceAddress;
 
+            return mPerm;
+        }
     }
 }

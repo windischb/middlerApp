@@ -120,6 +120,16 @@
                     </div>
                 </ng-template>
             </nz-tab>
+            <nz-tab [nzTitle]="ExternalClaimsTitle">
+                <ng-template #ExternalClaimsTitle>
+                    <i nz-icon nzType="container"></i>External Claims
+                </ng-template>
+                <ng-template nz-tab>
+                    <div style="display: flex; flex-direction: row; padding:3px 0px; flex-grow:1">
+                        <claims-manager formControlName="ExternalClaims" [showIssuer]="true" [allowedActions]="['remove']"></claims-manager>
+                    </div>
+                </ng-template>
+            </nz-tab>
             <nz-tab [nzTitle]="DebugTitle" *ngIf="showDebugInformations$ | async">
                 <ng-template #DebugTitle> <i nz-icon nzType="bug"></i>Debug</ng-template>
                 <div style="height: 100%;">

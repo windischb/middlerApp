@@ -12,6 +12,7 @@ import { ActionBasicModalComponent } from './endpoint-actions/base/action-basic-
 import { UrlRewriteModalComponent, UrlRedirectModalComponent, ProxyModalComponent, ScriptModalComponent } from './endpoint-actions';
 
 import { GlobalImportsModule } from '../../global-imports.module';
+import { PermissionManagerModule } from '../permissions-manager/permission-manager.module';
 
 
 
@@ -26,7 +27,8 @@ const ActionComponents = [
         ReactiveFormsModule,
         EndpointRulesRoutingModule,
         DragDropModule,
-        GlobalImportsModule
+        GlobalImportsModule,
+        PermissionManagerModule
     ],
     declarations: [
         ...RoutingComponents,

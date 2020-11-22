@@ -322,7 +322,7 @@ export class EndpointActionsListComponent implements OnInit, ControlValueAccesso
 
     drop(event: CdkDragDrop<EndpointAction[]>) {
 
-        console.log(event);
+        
         const currentItem = this.actions[event.previousIndex];
 
         let direction = null;

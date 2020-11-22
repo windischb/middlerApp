@@ -3,6 +3,7 @@ import { OAuthService, UserInfo, LoginOptions, AuthConfig } from 'angular-oauth2
 import { filter } from 'rxjs/operators';
 import { LoggedInUser } from './logged-in-user.model';
 import { BehaviorSubject } from 'rxjs';
+import { AdminUIConfig, AdminUIConfigService } from '../../../admin-ui-config.service';
 
 @Injectable({
     providedIn: 'root'
@@ -12,12 +13,14 @@ export class AuthenticationService {
     private currentUserSubject$ = new BehaviorSubject<LoggedInUser>(null);
     currentUser$ = this.currentUserSubject$.asObservable();
     private authConfig: AuthConfig;
+    private adminUIConfig: AdminUIConfig;
+    constructor(private oauthService: OAuthService, private adminUIConfigService: AdminUIConfigService) {
 
-    constructor(private oauthService: OAuthService) {
+        this.adminUIConfig = adminUIConfigService.getConfiguration();
 
         this.authConfig = {
 
-            issuer: 'https://localhost:4445',
+            issuer: this.adminUIConfig.IDPBaseUri,
             redirectUri: window.location.origin,
             clientId: 'mAdmin',
             scope: 'openid roles offline_access IdentityServerApi',
@@ -112,7 +115,7 @@ export class AuthenticationService {
     }
 
     LogOut() {
-        this.clearUser();
-        this.oauthService.logOut();
+        //this.clearUser();
+        this.oauthService.logOut()
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using IdentityModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using middlerApp.API.Attributes;
 using middlerApp.IDP.DataAccess.Entities.Entities;
@@ -14,7 +16,7 @@ namespace middlerApp.API.Controllers.Admin.Identity
     [ApiController]
     [Route("api/idp/clients")]
     [AdminController]
-    //[Authorize(IdentityServerConstants.LocalApi.PolicyName)]
+    [Authorize(Policy = "Admin")]
     public class ClientsController: Controller
     {
         public IClientService ClientService { get; }
@@ -91,6 +93,7 @@ namespace middlerApp.API.Controllers.Admin.Identity
                 }
                 else
                 {
+                    dtoSecret.Value = dtoSecret.Value.ToSha512();
                     sec = _mapper.Map<ClientSecret>(dtoSecret);
 
                 }

@@ -31,6 +31,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { NzResultModule } from 'ng-zorro-antd/result';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 
 const GlobalModules = [
     NzFormModule,
@@ -55,6 +56,7 @@ const GlobalModules = [
     NzResultModule,
     NzCardModule,
     NzSwitchModule,
+    NzPopoverModule,
     
     DoobEditorModule,
     DoobCoreModule,

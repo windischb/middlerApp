@@ -14,7 +14,7 @@ namespace middlerApp.IDP.DataAccess.Sqlite.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.0-rc.2.20475.6");
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("MRoleMUser", b =>
                 {
@@ -176,6 +176,35 @@ namespace middlerApp.IDP.DataAccess.Sqlite.Migrations
                     b.HasIndex("ApiResourceId");
 
                     b.ToTable("ApiResourceSecrets");
+                });
+
+            modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Entities.AuthenticationProvider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Parameters")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuthenticationProviders");
                 });
 
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Entities.Client", b =>
@@ -770,6 +799,39 @@ namespace middlerApp.IDP.DataAccess.Sqlite.Migrations
                     b.ToTable("UserConsents");
                 });
 
+            modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MExternalClaim", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Issuer")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ExternalClaims");
+                });
+
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1147,6 +1209,17 @@ namespace middlerApp.IDP.DataAccess.Sqlite.Migrations
                     b.Navigation("Scope");
                 });
 
+            modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MExternalClaim", b =>
+                {
+                    b.HasOne("middlerApp.IDP.DataAccess.Entities.Models.MUser", "User")
+                        .WithMany("ExternalClaims")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MUserClaim", b =>
                 {
                     b.HasOne("middlerApp.IDP.DataAccess.Entities.Models.MUser", "User")
@@ -1226,6 +1299,8 @@ namespace middlerApp.IDP.DataAccess.Sqlite.Migrations
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MUser", b =>
                 {
                     b.Navigation("Claims");
+
+                    b.Navigation("ExternalClaims");
 
                     b.Navigation("Logins");
 

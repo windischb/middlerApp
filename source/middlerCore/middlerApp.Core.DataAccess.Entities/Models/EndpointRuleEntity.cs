@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using middler.Common.SharedModels.Models;
 
 namespace middlerApp.Core.DataAccess.Entities.Models
 {
@@ -15,7 +16,7 @@ namespace middlerApp.Core.DataAccess.Entities.Models
         public string Hostname { get; set; }
         public string Path { get; set; }
         public string HttpMethods { get; set; }
-        //public List<MiddlerRulePermission> Permissions { get; set; } = new List<MiddlerRulePermission>();
+        public List<EndpointRulePermission> Permissions { get; set; } = new List<EndpointRulePermission>();
         public List<EndpointActionEntity> Actions { get; set; } = new List<EndpointActionEntity>();
 
     }

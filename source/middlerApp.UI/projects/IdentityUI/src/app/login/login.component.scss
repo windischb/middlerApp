@@ -1,5 +1,5 @@
 .login-form {
-  max-width: 300px;
+  max-width: 500px;
   margin: auto;
 
   position: relative;
@@ -16,4 +16,8 @@
 
 .login-form-button {
   width: 100%;
+}
+
+.external-providers {
+  padding: 10px;
 }

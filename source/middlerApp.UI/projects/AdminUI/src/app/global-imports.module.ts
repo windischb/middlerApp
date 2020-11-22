@@ -35,6 +35,7 @@ import { NzElementPatchModule } from 'ng-zorro-antd/core/element-patch'
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzResizableModule } from 'ng-zorro-antd/resizable';
 
+
 const GlobalModules = [
     NzFormModule,
     NzInputModule,
@@ -69,7 +70,8 @@ const GlobalModules = [
     FontAwesomeModule,
 
     DragDropModule,
-    OverlayModule
+    OverlayModule,
+
 ]
 
 

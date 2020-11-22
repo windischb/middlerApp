@@ -38,7 +38,7 @@
 
 <ng-template #itemsContextMenu let-context>
     <ul nz-menu nzMode="vertical" class="context-menu">
-        <li nz-menu-item (click)="AddClaim()">
+        <li nz-menu-item (click)="AddClaim()" *ngIf="HasAction('add')">
             <fa-icon nz-icon [icon]="['far', 'plus-square']"></fa-icon>
             Add Claim
         </li>

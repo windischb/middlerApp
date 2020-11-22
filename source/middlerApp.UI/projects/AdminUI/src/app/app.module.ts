@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { AppRoutingModule, RoutingComponents } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -23,12 +23,19 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { FortAwesomeLib } from './fortawesome';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { AdminUIConfigService } from './admin-ui-config.service';
+
 
 
 registerLocaleData(en);
 export function storageFactory() : OAuthStorage {
   return localStorage
 }
+
+const appInitializerFn = (configService: AdminUIConfigService) => {
+  return () => configService.loadConfiguration();
+};
+
 
 @NgModule({
   declarations: [
@@ -52,6 +59,14 @@ export function storageFactory() : OAuthStorage {
     NzIconModule.forRoot(FortAwesomeLib.AntdIcons)
   ],
   providers: [
+    AdminUIConfigService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitializerFn,
+      multi: true,
+      deps: [AdminUIConfigService]
+    },
+
     { provide: NZ_I18N, useValue: en_US },
     { provide: OAuthStorage, useFactory: storageFactory }
   ],

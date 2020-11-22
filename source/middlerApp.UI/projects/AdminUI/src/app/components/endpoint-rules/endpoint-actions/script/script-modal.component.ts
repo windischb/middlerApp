@@ -20,6 +20,10 @@ export class ScriptModalComponent implements OnInit {
         tap(t => console.log(t))
     );
 
+    imports$ = this.rulesService.imports$.pipe(
+        tap(t => console.log(t))
+    );
+
     constructor(private fb: FormBuilder,
         private context: OverlayContext<EndpointAction>,
         private rulesService: EndpointRulesService) {
@@ -33,7 +37,7 @@ export class ScriptModalComponent implements OnInit {
             SourceCode: []
         });
         if(!this.context.data.Parameters.Language) {
-            this.context.data.Parameters.Language = "Typescript"
+            this.context.data.Parameters.Language = "TypeScript"
         }
         this.form.patchValue(this.context.data.Parameters)
 

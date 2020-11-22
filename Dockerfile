@@ -3,13 +3,12 @@ WORKDIR /sln
 
 COPY . .
 
-RUN dotnet build "./build" /nodeReuse:false
-RUN dotnet run --project build --target Publish
+RUN dotnet publish -o ./publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
 WORKDIR /app
 
-COPY --from=builder ./sln/output .
+COPY --from=builder ./sln/publish .
 
 EXPOSE 80
 EXPOSE 443

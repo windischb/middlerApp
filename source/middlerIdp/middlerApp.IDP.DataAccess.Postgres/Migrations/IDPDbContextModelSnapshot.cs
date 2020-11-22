@@ -17,7 +17,7 @@ namespace middlerApp.IDP.DataAccess.Postgres.Migrations
             modelBuilder
                 .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.0-rc.2.20475.6");
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("MRoleMUser", b =>
                 {
@@ -179,6 +179,35 @@ namespace middlerApp.IDP.DataAccess.Postgres.Migrations
                     b.HasIndex("ApiResourceId");
 
                     b.ToTable("ApiResourceSecrets");
+                });
+
+            modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Entities.AuthenticationProvider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Parameters")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuthenticationProviders");
                 });
 
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Entities.Client", b =>
@@ -773,6 +802,39 @@ namespace middlerApp.IDP.DataAccess.Postgres.Migrations
                     b.ToTable("UserConsents");
                 });
 
+            modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MExternalClaim", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Issuer")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ExternalClaims");
+                });
+
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1150,6 +1212,17 @@ namespace middlerApp.IDP.DataAccess.Postgres.Migrations
                     b.Navigation("Scope");
                 });
 
+            modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MExternalClaim", b =>
+                {
+                    b.HasOne("middlerApp.IDP.DataAccess.Entities.Models.MUser", "User")
+                        .WithMany("ExternalClaims")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MUserClaim", b =>
                 {
                     b.HasOne("middlerApp.IDP.DataAccess.Entities.Models.MUser", "User")
@@ -1229,6 +1302,8 @@ namespace middlerApp.IDP.DataAccess.Postgres.Migrations
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MUser", b =>
                 {
                     b.Navigation("Claims");
+
+                    b.Navigation("ExternalClaims");
 
                     b.Navigation("Logins");
 

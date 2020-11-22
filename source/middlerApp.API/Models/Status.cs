@@ -9,7 +9,9 @@ namespace middlerApp.API.Models
         public string ClientIp { get; set; }
         public string UserAgent { get; set; }
         public DateTime CurrentDateTime { get; set; }
-        public string CurrentUser { get; set; }
+        public string User { get; set; }
+        public string Client { get; set; }
+        public bool Authenticated { get; set; }
         public string HostName { get; set; }
         public string[] ProxyServers { get; set; }
         public DateTime ServiceStart { get; set; }

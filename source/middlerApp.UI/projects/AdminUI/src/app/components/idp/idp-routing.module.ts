@@ -12,6 +12,8 @@ import { IdentityResourcesComponent } from './identity-resources/identity-resour
 import { IdentityResourceDetailsComponent } from './identity-resources/identity-resource-details.component';
 import { ApiScopesComponent } from './api-scopes/api-scopes.component';
 import { ApiScopeDetailsComponent } from './api-scopes/api-scope-details.component';
+import { AuthenticationProvidersComponent } from './authentication-providers/authentication-providers.component';
+import { AuthenticationProviderDetailsComponent } from './authentication-providers/authentication-provider-details.component';
 
 
 const routes: Routes = [
@@ -27,6 +29,8 @@ const routes: Routes = [
     { path: 'identity-resources/:id', component: IdentityResourceDetailsComponent },
     { path: 'api-scopes', component: ApiScopesComponent },
     { path: 'api-scopes/:id', component: ApiScopeDetailsComponent },
+    { path: 'authentication-providers', component: AuthenticationProvidersComponent },
+    { path: 'authentication-providers/:id', component: AuthenticationProviderDetailsComponent },
 ];
 
 export const RoutingComponents = [
@@ -41,7 +45,9 @@ export const RoutingComponents = [
     IdentityResourcesComponent,
     IdentityResourceDetailsComponent,
     ApiScopesComponent,
-    ApiScopeDetailsComponent
+    ApiScopeDetailsComponent,
+    AuthenticationProvidersComponent,
+    AuthenticationProviderDetailsComponent
 ]
 
 @NgModule({

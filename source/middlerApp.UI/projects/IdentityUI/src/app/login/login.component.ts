@@ -4,7 +4,8 @@ import { IdpService } from '../shared/services/idp/idp.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { LoginInputModel } from '../shared/services/idp/models/login-input-model';
-import { AuthenticationService } from '../shared/services/authentication-service';
+import { AuthenticationService } from '../shared/services/authentication/authentication-service';
+import { ExternalLoginModel } from '../shared/services/idp/models/external-login-model';
 
 @Component({
     templateUrl: './login.component.html',
@@ -17,7 +18,7 @@ export class IdpUILoginComponent {
 
     viewModel = null;
     errors: any;
-   
+
 
     constructor(private fb: FormBuilder, private idpService: IdpService, private route: ActivatedRoute, private router: Router, private auth: AuthenticationService) { }
 
@@ -65,13 +66,13 @@ export class IdpUILoginComponent {
         console.log(this.form.value);
 
         this.idpService.SendLoginInputModel(model)
-        .pipe(
+            .pipe(
 
-        )
-        .subscribe(result => {
+            )
+            .subscribe(result => {
 
                 this.errors = result.Errors;
-            console.log("result:", result)
+                console.log("result:", result)
                 switch (result.Status) {
                     case 'Confirmed':
                     case 'Ok':
@@ -95,6 +96,39 @@ export class IdpUILoginComponent {
                 }
 
             });
+    }
+
+    LoginExternal(scheme: string) {
+        console.log(this.viewModel);
+
+        const model = new ExternalLoginModel();
+        model.ReturnUrl = this.viewModel.ReturnUrl;
+        model.Scheme = scheme;
+        
+        this.idpService.SendExternalLoginInputModel(model).subscribe(result => {
+            console.log(result);
+            switch (result.Status) {
+                case 'Confirmed':
+                case 'Ok':
+                    console.log("OK")
+                    this.auth.GetAccessToken();
+                    if (result.ReturnUrl) {
+                        // const url =  window.location.origin + result.ReturnUrl;
+                        // console.log("locations", url)
+                        window.location.href = result.ReturnUrl;
+                    } else {
+                        window.location.href = "/"
+                    }
+
+                    break;
+                case 'MustConfirm':
+                    this.router.navigate(['account', 'confirmation']);
+                    break;
+                case 'Error':
+
+                    break;
+            }
+        })
     }
 
 }

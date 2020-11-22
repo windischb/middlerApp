@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="middler.Common.SharedModels" Version="1.0.0" />
+    <PackageReference Include="middler.Common.SharedModels" Version="1.7.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Reflectensions.Json" Version="4.6.2" />
+    <PackageReference Include="Reflectensions.Json" Version="4.7" />
   </ItemGroup>
 
 </Project>

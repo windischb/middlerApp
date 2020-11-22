@@ -19,6 +19,8 @@ namespace middlerApp.API
 
         public static bool IsDevelopment => Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development;
 
+        public static string DomainName =>
+            System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
 
         public static StartUpConfiguration StartUpConfiguration { get; } = BuildConfig();
 
@@ -43,6 +45,7 @@ namespace middlerApp.API
             return config.Build().Get<StartUpConfiguration>();
             
         }
+
 
     }
 }

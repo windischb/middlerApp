@@ -21,6 +21,9 @@ import { ApiScopesStore, ApiScopesQuery } from './api-scopes/api-scopes.store';
 import { IMScopeDto } from './models/m-scope-dto';
 import { SetPasswordDto } from './models/set-password-dto';
 import { OAuthService } from 'angular-oauth2-oidc';
+import { AuthenticationProviderDto } from './models/authentication-provider-dto';
+import { AuthenticationProviderListDto } from './models/authentication-provider-list-dto';
+import { AuthenticationProvidersQuery, AuthenticationProvidersStore } from './authentication-providers/authentication-providers.store';
 
 @Injectable({
     providedIn: 'root'
@@ -41,13 +44,15 @@ export class IDPService {
         private identityApiScopesQuery: ApiScopesQuery,
         private identityResourcesStore: IdentityResourcesStore,
         private identityResourcesQuery: IdentityResourcesQuery,
+        private authenticationProvidersStore: AuthenticationProvidersStore,
+        private authenticationProvidersQuery: AuthenticationProvidersQuery,
         private http: HttpClient,
         private message: MessageService,
         private auth: OAuthService) {
 
         this.message.RunOnEveryReconnect(() => {
-           this.SubscribeToAll();
-            
+            this.SubscribeToAll();
+
         });
         this.SubscribeToAll();
     }
@@ -464,5 +469,68 @@ export class IDPService {
 
     //#endregion
 
+    //#region AuthenticationProviders
+
+    SubscribeAuthenticationProvidersEvents() {
+        this.message.Stream<DataEvent<AuthenticationProviderListDto>>("AuthenticationProviders.Subscribe").pipe(
+            tap(item => {
+                console.log(item)
+                switch (item.Action) {
+                    case "Created": {
+                        this.authenticationProvidersStore.add(item.Payload);
+                        break;
+                    }
+                    case "Updated": {
+                        this.authenticationProvidersStore.update(item.Payload.Id, entity => item.Payload);
+                        break;
+                    }
+                    case "Deleted": {
+                        this.authenticationProvidersStore.update(<any>item.Payload, entity => ({
+                            ...entity,
+                            Deleted: true
+                        }));
+                    }
+                }
+
+            })
+        ).subscribe()
+    }
+    ReLoadAuthenticationProviders() {
+        this.http.get<Array<AuthenticationProviderListDto>>(`api/idp/authentication-provider`, { headers: this.getHeaders() }).pipe(
+            tap(users => this.authenticationProvidersStore.set(users))
+        ).subscribe();
+    }
+
+    GetAllAuthenticationProvidersList(force?: boolean) {
+        if (force || !this.authenticationProvidersQuery.getHasCache()) {
+            this.ReLoadAuthenticationProviders()
+        }
+
+        return this.authenticationProvidersQuery.selectAll();
+    }
+
+    GetAuthenticationProvider(id: string) {
+        return this.http.get<AuthenticationProviderDto>(`api/idp/authentication-provider/${id}`, { headers: this.getHeaders() })
+    }
+
+    CreateAuthenticationProvider(dtoModel: AuthenticationProviderDto) {
+        return this.http.post(`api/idp/authentication-provider`, dtoModel, { headers: this.getHeaders() });
+    }
+
+    UpdateAuthenticationProvider(dtoModel: AuthenticationProviderDto) {
+        return this.http.put(`api/idp/authentication-provider`, dtoModel, { headers: this.getHeaders() });
+    }
+
+    DeleteAuthenticationProvider(...ids: string[]) {
+
+        const options = {
+            body: ids,
+            headers: this.getHeaders()
+        }
+
+        return this.http.request("delete", `api/idp/authentication-provider`, options);
+    }
+
+    //#endregion
 
 }

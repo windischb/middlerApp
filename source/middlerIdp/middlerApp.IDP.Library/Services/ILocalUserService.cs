@@ -16,7 +16,7 @@ namespace middlerApp.IDP.Library.Services
             string password);
         Task<IEnumerable<MUserClaim>> GetUserClaimsBySubjectAsync(
             string subject);         
-        Task<MUser> GetUserByUserNameAsync(
+        Task<MUser> GetUserByUserNameOrEmailAsync(
             string userName);
         Task<MUser> GetUserBySubjectAsync(
             string subject);

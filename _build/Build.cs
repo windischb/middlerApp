@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Nuke.Common;
+using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
@@ -15,7 +16,7 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [CheckBuildProjectConfigurations]
-[UnsetVisualStudioEnvironmentVariables]
+[ShutdownDotNetAfterServerBuild]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -27,7 +28,7 @@ class Build : NukeBuild
     public static int Main () => Execute<Build>(x => x.Compile);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly string Configuration = IsLocalBuild ? "Debug" : "Release";
+    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     [Solution] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
@@ -37,7 +38,7 @@ class Build : NukeBuild
     AbsolutePath TestsDirectory => RootDirectory / "tests";
     AbsolutePath OutputDirectory => RootDirectory / "output";
 
-    Project MainProject => Solution.Projects.FirstOrDefault(p => p.Name == "middler.App");
+    Project MainProject => Solution.Projects.FirstOrDefault(p => p.Name == "middlerApp.API");
 
     Target Clean => _ => _
         .Before(Restore)
@@ -68,12 +69,11 @@ class Build : NukeBuild
                 .EnableNoRestore());
         });
 
-
     Target Publish => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
-            DotNetPublish(opts => opts
+            var p = DotNetPublish(opts => opts
                 .SetProject(MainProject)
                 .SetVersion(GitVersion.NuGetVersionV2)
                 .SetConfiguration("release")
@@ -82,9 +82,9 @@ class Build : NukeBuild
                 .SetInformationalVersion(GitVersion.InformationalVersion)
                 .EnableNoRestore()
                 .SetOutput(OutputDirectory)
+                
             );
+            
         });
-
-
 
 }

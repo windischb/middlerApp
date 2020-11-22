@@ -22,16 +22,13 @@ namespace middlerApp.Core.Repository
             var rules = AppDbContext
                 .EndpointRules.AsQueryable()
                 .Where(er => er.Enabled)
-                .Include(r => r.Actions).ToList()
-                .Select(
-                    r =>
-                    {
-                        r.Actions = r.Actions.OrderBy(a => a.Order).ToList();
-                        return r;
-                    })
-                .Select(r => r.ToMiddlerRule());
+                .Include(r => r.Actions)
+                .Include(r => r.Permissions)
+                .ToList()
+                .Select(r => r.ToMiddlerRule())
+                .ToList();
 
-            return rules.ToList();
+            return rules;
 
         }
     }

@@ -4,7 +4,7 @@ import { IdpService } from '../shared/services/idp/idp.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { LoginInputModel } from '../shared/services/idp/models/login-input-model';
-import { AuthenticationService } from '../shared/services/authentication-service';
+import { AuthenticationService } from '../shared/services/authentication/authentication-service';
 import { Location } from '@angular/common';
 import { LogOutModel } from '../shared/services/idp/models/log-out-model';
 

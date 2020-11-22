@@ -21,6 +21,8 @@ namespace middlerApp.IDP.Library.Mappers
 
             CreateMap<MUserClaim, MUserClaimDto>().ReverseMap();
 
+            CreateMap<MExternalClaim, MExternalClaimDto>().ReverseMap();
+
             CreateMap<MUser, MUserListDto>()
                 .ForMember(dest => dest.HasPassword,
                     expression => expression.MapFrom((user, dto) => !String.IsNullOrWhiteSpace(user.Password)))

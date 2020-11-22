@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, TemplateRef, ViewContainerRef, ViewChild } from "@angular/core";
+import { Component, Input, Output, EventEmitter, TemplateRef, ViewContainerRef, ViewChild, OnInit } from "@angular/core";
 import { SimpleClaim } from './simple-claim';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { IOverlayHandle, DoobOverlayService } from '@doob-ng/cdk-helper';
@@ -14,7 +14,7 @@ import { GridBuilder, DefaultContextMenuContext } from '@doob-ng/grid';
         multi: true
     }],
 })
-export class ClaimsManagerComponent implements ControlValueAccessor {
+export class ClaimsManagerComponent implements ControlValueAccessor, OnInit {
 
 
     _claims: Array<SimpleClaim> = [];
@@ -45,15 +45,22 @@ export class ClaimsManagerComponent implements ControlValueAccessor {
         }
     }
 
+
+    @Input() showIssuer: boolean = false;
+    @Input() allowedActions: string[] = ["add","edit","remove"]
     @Output() claimsChange: EventEmitter<Array<SimpleClaim>> = new EventEmitter<Array<SimpleClaim>>();
 
     @ViewChild('itemsContextMenu') itemsContextMenu: TemplateRef<any>
     // @ViewChild('viewportContextMenu') viewportContextMenu: TemplateRef<any>
 
-    grid = new GridBuilder()
+    grid = null;
+  
+    buildGrid() {
+
+        return new GridBuilder()
         .SetColumns(
             c => c.Default("Type")
-                .Editable()
+                .Editable(this.allowedActions.includes("edit"))
                 .SetInitialWidth(300, true)
                 .Set(cl => {
                     cl.filter = 'agTextColumnFilter';
@@ -61,7 +68,8 @@ export class ClaimsManagerComponent implements ControlValueAccessor {
                         buttons: ['reset', 'apply'],
                     }
                 }),
-            c => c.Default("Value").Editable()
+            c => c.Default("Value").Editable(this.allowedActions.includes("edit")),
+            c => c.Default("Issuer").SetHidden(!this.showIssuer)
         )
         .WithRowSelection("multiple")
         .WithFullRowEditType()
@@ -77,6 +85,8 @@ export class ClaimsManagerComponent implements ControlValueAccessor {
             this.contextMenu = this.overlay.OpenContextMenu(ev.event as MouseEvent, this.itemsContextMenu, this.viewContainerRef, vContext)
         })
         .OnViewPortContextMenu((ev, api) => {
+            if(!this.allowedActions.includes("add"))
+                return;
             api.deselectAll();
             let vContext = new DefaultContextMenuContext(api, ev as MouseEvent)
             this.contextMenu = this.overlay.OpenContextMenu(ev, this.itemsContextMenu, this.viewContainerRef, vContext)
@@ -91,6 +101,9 @@ export class ClaimsManagerComponent implements ControlValueAccessor {
             api.deselectAll();
         });
 
+
+    }
+    
     private contextMenu: IOverlayHandle;
 
     constructor(
@@ -100,12 +113,18 @@ export class ClaimsManagerComponent implements ControlValueAccessor {
 
     }
 
-
+    ngOnInit() {
+        this.grid = this.buildGrid();
+    }
     private i: number = 0;
     private buildNextClaim() {
         var cl = new SimpleClaim();
         this.i++;
         return cl;
+    }
+
+    HasAction(action: string) {
+        return this.allowedActions.includes(action);
     }
 
     AddClaim(): void {

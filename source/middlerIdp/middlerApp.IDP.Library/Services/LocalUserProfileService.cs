@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using Reflectensions.ExtensionMethods;
 
 namespace middlerApp.IDP.Library.Services
 {
@@ -29,33 +30,37 @@ namespace middlerApp.IDP.Library.Services
 
             var claims = new List<Claim>();
 
-            if (!String.IsNullOrEmpty(user.FirstName))
+            if (user != null)
             {
-                claims.Add(new Claim("given_name", user.FirstName));
-            }
-
-            if (!String.IsNullOrEmpty(user.LastName))
-            {
-                claims.Add(new Claim("family_name", user.LastName));
-            }
-
-            if (!String.IsNullOrEmpty(user.UserName))
-            {
-                claims.Add(new Claim("name", user.UserName));
-            }
-
-            if (!String.IsNullOrEmpty(user.Email))
-            {
-                claims.Add(new Claim("email", user.Email));
-            }
-
-            if (context.RequestedClaimTypes.Contains("role"))
-            {
-                foreach (var userUserRole in user.Roles)
+                if (!String.IsNullOrEmpty(user?.FirstName))
                 {
-                    claims.Add(new Claim("role", userUserRole.Name));
+                    claims.Add(new Claim("given_name", user.FirstName));
+                }
+
+                if (!String.IsNullOrEmpty(user?.LastName))
+                {
+                    claims.Add(new Claim("family_name", user.LastName));
+                }
+
+                if (!String.IsNullOrEmpty(user?.UserName))
+                {
+                    claims.Add(new Claim("name", user.UserName));
+                }
+
+                if (!String.IsNullOrEmpty(user?.Email))
+                {
+                    claims.Add(new Claim("email", user.Email));
+                }
+
+                if (context.RequestedClaimTypes.Contains("role"))
+                {
+                    foreach (var userUserRole in user.Roles)
+                    {
+                        claims.Add(new Claim("role", userUserRole.Name));
+                    }
                 }
             }
+           
             
 
 
@@ -67,7 +72,16 @@ namespace middlerApp.IDP.Library.Services
         public async Task IsActiveAsync(IsActiveContext context)
         {
             var subjectId = context.Subject.GetSubjectId();
-            context.IsActive = await _localUserService.IsUserActive(subjectId);
+            var idp = context.Subject.Claims.GetFirstClaimValueByType("idp");
+            if (idp == "Windows")
+            {
+                context.IsActive = true;
+            }
+            else
+            {
+                context.IsActive = await _localUserService.IsUserActive(subjectId);
+            }
+            
         }
     }
 }

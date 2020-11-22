@@ -12,12 +12,9 @@ import { EndpointAction } from './models/endpoint-action';
 import { EndpointActionsListComponent } from './endpoint-actions-list/endpoint-actions-list.component';
 import { DataEvent } from '../../shared/models/data-event';
 import { EndpointRulesQuery, EndpointRulesStore } from './endpoint-rules-store';
+import { OAuthService } from 'angular-oauth2-oidc';
 //import { DoobEditorFile } from '@doob-ng/editor';
 
-const patchHeaders = new HttpHeaders({
-    'Content-Type': 'application/json-patch+json',
-    'Accept': 'application/json'
-})
 
 @Injectable({
     providedIn: 'root'
@@ -46,6 +43,7 @@ export class EndpointRulesService {
         private message: MessageService,
         private endpointRulesStore: EndpointRulesStore,
         private endpointRulesQuery: EndpointRulesQuery,
+        private auth: OAuthService
 
     ) {
 
@@ -53,10 +51,26 @@ export class EndpointRulesService {
 
         this.message.RunOnEveryReconnect(() => this.GetAllRules().subscribe());
         this.message.RunOnEveryReconnect(() => this.GetTypings());
+        this.message.RunOnEveryReconnect(() => this.GetImports());
 
         // this.message.Stream<any>("MiddlerRule.Subscribe").pipe(
         //     tap(item => console.log(item))
         // ).subscribe()
+    }
+
+    getHeaders(includePatchHeaders: boolean = false) {
+        if (includePatchHeaders) {
+            return new HttpHeaders({
+                'Authorization': 'Bearer ' + this.auth.getAccessToken(),
+                'Content-Type': 'application/json-patch+json',
+                'Accept': 'application/json'
+            });
+        } else {
+            return new HttpHeaders({
+                'Authorization': 'Bearer ' + this.auth.getAccessToken()
+            });
+        }
+
     }
 
     Subscribe() {
@@ -96,7 +110,7 @@ export class EndpointRulesService {
     }
 
     ReLoadRules() {
-        this.http.get<Array<EndpointRuleListDto>>(`/api/endpoint-rules`).pipe(
+        this.http.get<Array<EndpointRuleListDto>>(`/api/endpoint-rules`, { headers: this.getHeaders() }).pipe(
             tap(rules => this.endpointRulesStore.set(rules))
         ).subscribe();
     }
@@ -112,7 +126,7 @@ export class EndpointRulesService {
 
 
     public GetRule(id: string) {
-        return this.http.get<EndpointRule>(`/api/endpoint-rules/${id}`);
+        return this.http.get<EndpointRule>(`/api/endpoint-rules/${id}`, { headers: this.getHeaders() });
     }
 
     // public GetActionsForRule(ruleId: string) {
@@ -120,7 +134,7 @@ export class EndpointRulesService {
     // }
 
     public Add(rule: CreateMiddlerRuleDto) {
-        return this.http.post(`/api/endpoint-rules`, rule);
+        return this.http.post(`/api/endpoint-rules`, rule, { headers: this.getHeaders() });
     }
 
     // public AddAction(ruleId: string, action: EndpointAction) {
@@ -128,15 +142,15 @@ export class EndpointRulesService {
     // }
 
     public Remove(id: string) {
-        return this.http.delete(`/api/endpoint-rules/${id}`);
+        return this.http.delete(`/api/endpoint-rules/${id}`, { headers: this.getHeaders() });
     }
 
     public Update(id: string, rule: EndpointRule) {
-        return this.http.put<EndpointRule>(`/api/endpoint-rules/${id}`, rule);
+        return this.http.put<EndpointRule>(`/api/endpoint-rules/${id}`, rule, { headers: this.getHeaders() });
     }
 
     public UpdateAction(action: EndpointAction) {
-        return this.http.put<EndpointAction>(`/api/endpoint-action/${action.Id}`, action);
+        return this.http.put<EndpointAction>(`/api/endpoint-action/${action.Id}`, action, { headers: this.getHeaders() });
     }
 
     // public UpdatePartial(id: string, patchDocument: any) {
@@ -218,7 +232,7 @@ export class EndpointRulesService {
     public UpdateRuleOrder(rule: EndpointRuleListDto, newOrder: number) {
         var rules = {};
         rules[rule.Id] = newOrder;
-        this.http.post<EndpointRule>(`/api/endpoint-rules/order`, rules, { headers: patchHeaders }).subscribe()
+        this.http.post<EndpointRule>(`/api/endpoint-rules/order`, rules, { headers: this.getHeaders(true) }).subscribe()
     }
 
     // public UpdateActionsOrder(ruleId: string, actions: Array<EndpointAction>) {
@@ -233,7 +247,7 @@ export class EndpointRulesService {
 
     public SetRuleEnabled(rule: EndpointRuleListDto, value: boolean) {
 
-        this.http.put<EndpointRule>(`/api/endpoint-rules/${rule.Id}/enabled/${value}`, null, { headers: patchHeaders }).subscribe();
+        this.http.put<EndpointRule>(`/api/endpoint-rules/${rule.Id}/enabled/${value}`, null, { headers: this.getHeaders(true) }).subscribe();
 
     }
 
@@ -262,12 +276,25 @@ export class EndpointRulesService {
     typings$: BehaviorSubject<DoobEditorFile[]> = new BehaviorSubject<DoobEditorFile[]>([]);
 
     public GetTypings() {
-        this.message.Invoke<Array<{ Key: string, Value: string }>>("MiddlerRule.GetTypings")
+        this.http.get<Array<{ Key: string, Value: string }>>("api/endpoint-rules/type-definitions", { headers: this.getHeaders() })
             .pipe(
                 take(1),
                 tap(typings => {
                     var ts = typings.map(t => new DoobEditorFile(t.Key, t.Value, false))
                     this.typings$.next(ts);
+                })
+            ).subscribe();
+    }
+
+    imports$: BehaviorSubject<DoobEditorFile[]> = new BehaviorSubject<DoobEditorFile[]>([]);
+
+    public GetImports() {
+        this.http.get<Array<{ Key: string, Value: string }>>("api/endpoint-rules/import-definitions", { headers: this.getHeaders() })
+            .pipe(
+                take(1),
+                tap(typings => {
+                    var ts = typings.map(t => new DoobEditorFile(t.Key, t.Value, false))
+                    this.imports$.next(ts);
                 })
             ).subscribe();
     }

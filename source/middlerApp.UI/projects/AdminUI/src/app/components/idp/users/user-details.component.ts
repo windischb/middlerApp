@@ -73,6 +73,7 @@ export class UserDetailsComponent implements OnInit {
             Active: [null],
             
             Claims: [[]],
+            ExternalClaims: [[]],
             Roles: [[]]
         })
 

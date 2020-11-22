@@ -46,7 +46,8 @@ export class EndpointRuleDetailsComponent {
                 ui.Footer.Button1.Visible = true;
                 ui.Footer.Button2.Visible = true;
             })
-
+            rule.Permissions = rule.Permissions ?? [];
+            console.log(rule)
             this.form.patchValue(rule)
         })
     )
@@ -85,7 +86,7 @@ export class EndpointRuleDetailsComponent {
             Path: [],
             Actions: [[]], //this.fb.array([]),
             HttpMethods: [[]],
-            //Permissions: [[]],
+            Permissions: [[]],
             Order: [],
             Enabled: [false]
         })
@@ -128,11 +129,7 @@ export class EndpointRuleDetailsComponent {
     GeneratePatchDocument(base?: any, comp?: any) {
         base = base ?? this.BaseRule;
         comp = comp ?? this.form.value;
-
-
-        base.Permissions = null;
-
-        comp.Permissions = null;
+      
         var patchDocument = compare(base, comp);
         //console.log(base, comp, patchDocument)
         return patchDocument;

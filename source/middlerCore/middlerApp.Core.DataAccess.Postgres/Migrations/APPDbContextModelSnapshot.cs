@@ -17,7 +17,7 @@ namespace middlerApp.Core.DataAccess.Postgres.Migrations
             modelBuilder
                 .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.0-rc.2.20475.6");
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointActionEntity", b =>
                 {
@@ -85,6 +85,40 @@ namespace middlerApp.Core.DataAccess.Postgres.Migrations
                     b.ToTable("EndpointRules");
                 });
 
+            modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointRulePermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AccessMode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Client")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("EndpointRuleEntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Order")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("PrincipalName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SourceAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EndpointRuleEntityId");
+
+                    b.ToTable("EndpointRulePermission");
+                });
+
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.TreeNode", b =>
                 {
                     b.Property<Guid>("Id")
@@ -117,6 +151,23 @@ namespace middlerApp.Core.DataAccess.Postgres.Migrations
                     b.ToTable("Variables");
                 });
 
+            modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.TypeDefinition", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Module")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TypeDefinitions");
+                });
+
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointActionEntity", b =>
                 {
                     b.HasOne("middlerApp.Core.DataAccess.Entities.Models.EndpointRuleEntity", null)
@@ -126,9 +177,18 @@ namespace middlerApp.Core.DataAccess.Postgres.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointRulePermission", b =>
+                {
+                    b.HasOne("middlerApp.Core.DataAccess.Entities.Models.EndpointRuleEntity", null)
+                        .WithMany("Permissions")
+                        .HasForeignKey("EndpointRuleEntityId");
+                });
+
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointRuleEntity", b =>
                 {
                     b.Navigation("Actions");
+
+                    b.Navigation("Permissions");
                 });
 #pragma warning restore 612, 618
         }

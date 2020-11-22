@@ -15,7 +15,7 @@ namespace middlerApp.IDP.DataAccess.Entities.Models
         [MaxLength(250)]
         [Required]
         public string Value { get; set; }
-
+        
         [ConcurrencyCheck]
         public string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
 

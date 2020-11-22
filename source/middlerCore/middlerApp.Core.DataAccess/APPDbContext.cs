@@ -12,6 +12,8 @@ namespace middlerApp.Core.DataAccess
 
         public DbSet<TreeNode> Variables { get; set; }
 
+        public DbSet<TypeDefinition> TypeDefinitions { get; set; }
+
         public APPDbContext(DbContextOptions<APPDbContext> options): base(options)
         {
 

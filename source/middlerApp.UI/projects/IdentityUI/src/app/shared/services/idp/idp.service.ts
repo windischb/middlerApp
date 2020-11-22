@@ -7,6 +7,8 @@ import { Router } from '@angular/router';
 import { ConsentViewModel } from './models/consent-view-model';
 import { ConsentInputModel } from './models/consent-input-model';
 import { ProcessConsentResult } from './models/process-content-result';
+import { tap } from 'rxjs/operators';
+import { ExternalLoginModel } from './models/external-login-model';
 
 @Injectable({providedIn: 'any'})
 export class IdpService {
@@ -28,6 +30,11 @@ export class IdpService {
 
     public SendLoginInputModel(loginInputModel: LoginInputModel) {
         return this.http.post<any>(`/idp/account/login`, loginInputModel);
+    }
+
+    public SendExternalLoginInputModel(loginModel: ExternalLoginModel) {
+        
+        return this.http.post<any>(`/idp/account/login-external`, loginModel).pipe(tap(r => console.log("TAP", r)));
     }
 
     public GetErrorModel(errorId: string) {

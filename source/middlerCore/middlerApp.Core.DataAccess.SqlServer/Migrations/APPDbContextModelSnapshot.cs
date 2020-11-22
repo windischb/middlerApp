@@ -17,7 +17,7 @@ namespace middlerApp.Core.DataAccess.SqlServer.Migrations
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.0-rc.2.20475.6");
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointActionEntity", b =>
                 {
@@ -85,6 +85,40 @@ namespace middlerApp.Core.DataAccess.SqlServer.Migrations
                     b.ToTable("EndpointRules");
                 });
 
+            modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointRulePermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AccessMode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Client")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("EndpointRuleEntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Order")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PrincipalName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SourceAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EndpointRuleEntityId");
+
+                    b.ToTable("EndpointRulePermission");
+                });
+
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.TreeNode", b =>
                 {
                     b.Property<Guid>("Id")
@@ -117,6 +151,23 @@ namespace middlerApp.Core.DataAccess.SqlServer.Migrations
                     b.ToTable("Variables");
                 });
 
+            modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.TypeDefinition", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Module")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TypeDefinitions");
+                });
+
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointActionEntity", b =>
                 {
                     b.HasOne("middlerApp.Core.DataAccess.Entities.Models.EndpointRuleEntity", null)
@@ -126,9 +177,18 @@ namespace middlerApp.Core.DataAccess.SqlServer.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointRulePermission", b =>
+                {
+                    b.HasOne("middlerApp.Core.DataAccess.Entities.Models.EndpointRuleEntity", null)
+                        .WithMany("Permissions")
+                        .HasForeignKey("EndpointRuleEntityId");
+                });
+
             modelBuilder.Entity("middlerApp.Core.DataAccess.Entities.Models.EndpointRuleEntity", b =>
                 {
                     b.Navigation("Actions");
+
+                    b.Navigation("Permissions");
                 });
 #pragma warning restore 612, 618
         }

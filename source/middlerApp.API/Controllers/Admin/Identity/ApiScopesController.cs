@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using middlerApp.API.Attributes;
 using middlerApp.IDP.DataAccess.Entities.Entities;
@@ -13,7 +14,7 @@ namespace middlerApp.API.Controllers.Admin.Identity
     [ApiController]
     [Route("api/idp/api-scopes")]
     [AdminController]
-    //[Authorize(IdentityServerConstants.LocalApi.PolicyName)]
+    [Authorize(Policy = "Admin")]
     public class ApiScopesController : Controller
     {
         public IApiScopesService ApiScopesService { get; }

@@ -70,6 +70,14 @@
                 <ng-template #ActionsTitle> <i nz-icon nzType="ordered-list"></i>Actions</ng-template>
                 <endpoint-actions-list formControlName="Actions"></endpoint-actions-list>
             </nz-tab>
+            <nz-tab [nzTitle]="PermissionsTitle">
+                <ng-template #PermissionsTitle> 
+                    <db-icon icon="fa#shield-alt"></db-icon>Permissions</ng-template>
+                <div style="height: 100%; display: flex; padding: 8px 0px;">
+                    <permissions-manager formControlName="Permissions">
+                        </permissions-manager>
+                </div>
+            </nz-tab>
             <nz-tab [nzTitle]="DebugTitle" *ngIf="showDebugInformations$ | async">
                 <ng-template #DebugTitle> <i nz-icon nzType="bug"></i>Debug</ng-template>
                 <div style="height: 100%;">

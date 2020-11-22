@@ -1,32 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using middler.Action.Scripting;
 using middler.Common.SharedModels.Models;
 using middler.Core;
 using middlerApp.API.Attributes;
 using middlerApp.API.ExtensionMethods;
+using middlerApp.API.Helper;
 using middlerApp.Core.DataAccess.Entities.Models;
 using middlerApp.Core.Repository;
 using middlerApp.SharedModels;
+using Scripter.Shared;
 
 namespace middlerApp.API.Controllers.Admin
 {
     [ApiController]
     [Route("api/endpoint-rules")]
     [AdminController]
+    [Authorize(Policy = "Admin")]
     public class EndpointRulesController: Controller
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IMapper _mapper;
         private readonly InternalHelper _internalHelper;
         private readonly EndpointRuleRepository _endpointRuleRepository;
 
         public EndpointRulesController(IServiceProvider serviceProvider, IMapper mapper, InternalHelper internalHelper, EndpointRuleRepository endpointRuleRepository)
         {
+            _serviceProvider = serviceProvider;
             _mapper = mapper;
             _internalHelper = internalHelper;
             _endpointRuleRepository = endpointRuleRepository;
@@ -49,7 +56,8 @@ namespace middlerApp.API.Controllers.Admin
         public async Task<ActionResult<EndpointRuleDto>> Get(Guid id)
         {
             var rule = await _endpointRuleRepository.Find(id);
-            return Ok(rule.ToEndpointRuleDto(_internalHelper));
+            var dto = rule.ToEndpointRuleDto(_internalHelper);
+            return Ok(dto);
         }
 
 
@@ -82,15 +90,15 @@ namespace middlerApp.API.Controllers.Admin
         public async Task<ActionResult<EndpointRuleDto>> Update(Guid id, [FromBody] EndpointRuleDto ruleDto)
         {
             var ruleInDb = await _endpointRuleRepository.Find(id);
-            var entity = _mapper.Map(ruleDto, ruleInDb);
-            foreach (var endpointActionEntity in entity.Actions)
+             _mapper.Map(ruleDto, ruleInDb);
+            foreach (var endpointActionEntity in ruleInDb.Actions)
             {
                 endpointActionEntity.EndpointRuleEntityId = id;
                 UpdateAction(endpointActionEntity);
             }
             
             
-            await _endpointRuleRepository.UpdateAsync(entity);
+            await _endpointRuleRepository.UpdateAsync(ruleInDb);
 
             var updated = await _endpointRuleRepository.GetByIdAsync(id);
             return Ok(updated.ToEndpointRuleDto(_internalHelper));
@@ -146,6 +154,35 @@ namespace middlerApp.API.Controllers.Admin
                 actionEntity.Parameters["CompiledCode"] = scriptAction?.CompileScriptIfNeeded();
             }
 
+        }
+
+
+        [HttpGet("import-definitions")]
+        public async Task<IActionResult> GetImportDefinitions()
+        {
+            
+            var declarations = _serviceProvider.GetServices<ScripterTypeDefinition>();
+
+            var tds = declarations.ToDictionary(d => $"{d.FileName}.d.ts", d => d.GetImports()).Where(kv => !String.IsNullOrWhiteSpace(kv.Value));
+            //var dir = PathHelper.GetFullPath("TypeDefinitions");
+            //var tds = Directory.GetFiles(dir).Select(f => new FileInfo(f))
+            //    .ToDictionary(f => f.Name, f => System.IO.File.ReadAllText(f.FullName)).ToList();
+
+            return Ok(tds);
+        }
+
+        [HttpGet("type-definitions")]
+        public async Task<IActionResult> GetTypeDefinitions()
+        {
+
+            var declarations = _serviceProvider.GetServices<ScripterTypeDefinition>();
+
+            var tds = declarations.ToDictionary(d => $"{d.FileName}.d.ts", d => d.GetTypeDefinitions()).Where(kv => !String.IsNullOrWhiteSpace(kv.Value));
+            //var dir = PathHelper.GetFullPath("TypeDefinitions");
+            //var tds = Directory.GetFiles(dir).Select(f => new FileInfo(f))
+            //    .ToDictionary(f => f.Name, f => System.IO.File.ReadAllText(f.FullName)).ToList();
+
+            return Ok(tds);
         }
     }
 }

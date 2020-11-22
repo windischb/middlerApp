@@ -33,12 +33,13 @@ namespace middlerApp.Core.Repository
         {
             return await _appDbContext.EndpointRules
                 .Include(r => r.Actions)
+                .Include(r => r.Permissions)
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
         public async Task<EndpointRuleEntity> GetByIdAsync(Guid id)
         {
-            return await _appDbContext.EndpointRules.Include(endp => endp.Actions).FirstOrDefaultAsync(endp => endp.Id == id);
+            return await _appDbContext.EndpointRules.AsNoTracking().Include(endp => endp.Actions).FirstOrDefaultAsync(endp => endp.Id == id);
         }
 
         public async Task AddAsync(EndpointRuleEntity endpointRuleEntity)
@@ -69,6 +70,8 @@ namespace middlerApp.Core.Repository
         public async Task UpdateAsync(EndpointRuleEntity endpointRuleEntity)
         {
             //var entity = await _appDbContext.EndpointRules.Include(endp => endp.Actions).FirstOrDefaultAsync(endp => endp.Id == endpointRuleEntity.Id);
+            //_appDbContext.Update(endpointRuleEntity);
+            //_appDbContext.Attach(endpointRuleEntity);
             _appDbContext.Entry(endpointRuleEntity).State = EntityState.Modified;
             await _appDbContext.SaveChangesAsync();
             EventDispatcher.DispatchUpdatedEvent("EndpointRule", endpointRuleEntity);

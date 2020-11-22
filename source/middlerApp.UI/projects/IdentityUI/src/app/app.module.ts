@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { AppRoutingModule, RoutingComponents } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,10 +16,16 @@ import { FaIconLibrary, FaConfig } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
+import { IdentityUIConfigService } from './identity-ui-config.service';
+
 
 export function storageFactory() : OAuthStorage {
   return localStorage
 }
+
+const appInitializerFn = (configService: IdentityUIConfigService) => {
+  return () => configService.loadConfiguration();
+};
 
 @NgModule({
   declarations: [
@@ -42,6 +48,13 @@ export function storageFactory() : OAuthStorage {
     OAuthModule.forRoot()
   ],
   providers: [
+    IdentityUIConfigService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitializerFn,
+      multi: true,
+      deps: [IdentityUIConfigService]
+    },
     { provide: OAuthStorage, useFactory: storageFactory }
   ],
   bootstrap: [AppComponent]

@@ -32,6 +32,7 @@ namespace middlerApp.IDP.Library.DtoModels
         public bool Active { get; set; }
 
         public ICollection<MUserClaimDto> Claims { get; set; } = new List<MUserClaimDto>();
+        public ICollection<MExternalClaimDto> ExternalClaims { get; set; } = new List<MExternalClaimDto>();
         public ICollection<MUserLogin> Logins { get; set; } = new List<MUserLogin>();
         public ICollection<MUserSecret> Secrets { get; set; } = new List<MUserSecret>();
 

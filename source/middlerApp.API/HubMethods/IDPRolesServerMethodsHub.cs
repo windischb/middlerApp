@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using middlerApp.Events;
 using middlerApp.IDP.DataAccess.Entities.Models;
 using middlerApp.IDP.Library.DtoModels;
@@ -13,7 +14,7 @@ using SignalARRR.Server;
 namespace middlerApp.API.HubMethods
 {
     [MessageName("IDPRoles")]
-    //[Authorize(IdentityServerConstants.LocalApi.PolicyName)]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class IDPRolesServerMethodsHub : ServerMethods<UIHub>
     {
         public IRolesService RolesService { get; }

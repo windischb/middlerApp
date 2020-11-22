@@ -48,6 +48,7 @@ namespace middlerApp.IDP.DataAccess.Entities.Models
         public string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
 
         public ICollection<MUserClaim> Claims { get; set; } = new List<MUserClaim>();
+        public ICollection<MExternalClaim> ExternalClaims { get; set; } = new List<MExternalClaim>();
         public ICollection<MUserLogin> Logins { get; set; } = new List<MUserLogin>();
         public ICollection<MUserSecret> Secrets { get; set; } = new List<MUserSecret>();
 

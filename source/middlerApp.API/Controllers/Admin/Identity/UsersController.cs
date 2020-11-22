@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using middlerApp.API.Attributes;
 using middlerApp.API.Controllers.Admin.Identity.ViewModels;
@@ -15,7 +16,7 @@ namespace middlerApp.API.Controllers.Admin.Identity
     [ApiController]
     [Route("api/idp/users")]
     [AdminController]
-    //[Authorize(IdentityServerConstants.LocalApi.PolicyName)]
+    [Authorize(Policy = "Admin")]
     public class UsersController : Controller
     {
         public IUsersService UsersService { get; }
@@ -39,7 +40,7 @@ namespace middlerApp.API.Controllers.Admin.Identity
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<MUser>>> GetAllUsers()
+        public async Task<ActionResult<List<MUserListDto>>> GetAllUsers()
         {
 
             var users = await UsersService.GetAllUserListDtosAsync();

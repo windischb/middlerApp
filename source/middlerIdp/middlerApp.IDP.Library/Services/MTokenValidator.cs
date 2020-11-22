@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Validation;
+using Reflectensions.ExtensionMethods;
 
 namespace middlerApp.IDP.Library.Services
 {
@@ -21,21 +22,30 @@ namespace middlerApp.IDP.Library.Services
 
         public override async Task<TokenValidationResult> ValidateAccessTokenAsync(TokenValidationResult result)
         {
-
-            var subjectId = result.ReferenceToken.SubjectId;
+            
+            var subjectId = result.ReferenceToken != null ? result.ReferenceToken.SubjectId : result.Claims.GetFirstClaimValueByType("sub");
             var user = await LocalUserService.GetUserBySubjectAsync(subjectId);
 
-
             var tempClaims = result.Claims.Where(c => c.Type != "role").ToList();
-            foreach (var role in user.Roles)
-            {
-                tempClaims.Add(new Claim("role", role.Name));
-            }
 
-            foreach (var roleClaim in user.Claims.Where(c => c.Type == "role"))
+            if (user != null)
             {
-                tempClaims.Add(new Claim("role", roleClaim.Value));
+                
+                if (user?.Roles != null)
+                {
+                    foreach (var role in user.Roles)
+                    {
+                        tempClaims.Add(new Claim("role", role.Name));
+                    }
+                }
+
+
+                foreach (var roleClaim in user.Claims.Where(c => c.Type == "role"))
+                {
+                    tempClaims.Add(new Claim("role", roleClaim.Value));
+                }
             }
+           
 
             
 

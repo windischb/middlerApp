@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using middlerApp.IDP.DataAccess.Entities.Entities;
 using middlerApp.IDP.DataAccess.Entities.Models;
+using Newtonsoft.Json.Linq;
 
 namespace middlerApp.IDP.DataAccess
 {
@@ -16,6 +17,7 @@ namespace middlerApp.IDP.DataAccess
         public DbSet<MRole> Roles { get; set; }
 
         public DbSet<MUserClaim> UserClaims { get; set; }
+        public DbSet<MExternalClaim> ExternalClaims { get; set; }
 
         public DbSet<MUserLogin> UserLogins { get; set; }
 
@@ -33,6 +35,7 @@ namespace middlerApp.IDP.DataAccess
         public DbSet<UserConsent> UserConsents { get; set; }
         //public DbSet<AuthorizationCode> AuthorizationCodes { get; set; }
 
+        public DbSet<AuthenticationProvider> AuthenticationProviders { get; set; }
 
         public IDPDbContext(DbContextOptions<IDPDbContext> options) : base(options)
         {
@@ -49,6 +52,15 @@ namespace middlerApp.IDP.DataAccess
             ConfigureResourcesContext(modelBuilder);
             ConfigurePersistedGrantContext(modelBuilder);
 
+            modelBuilder
+                .Entity<AuthenticationProvider>()
+                .Property(p => p.Parameters)
+                .HasConversion(
+                    v => v.ToString(),
+                    str => JObject.Parse(str)
+                );
+
+            
             base.OnModelCreating(modelBuilder);
         }
 

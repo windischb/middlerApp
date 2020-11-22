@@ -39,6 +39,7 @@ namespace middlerApp.IDP.Library.Services
                 .Include(u => u.Claims)
                 .Include(u => u.Logins)
                 .Include(u => u.Secrets)
+                .Include(u => u.ExternalClaims)
                 .Include(u => u.Roles).AsQueryable();
 
             return await query.FirstOrDefaultAsync(u => u.Id == id);

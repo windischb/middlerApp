@@ -17,7 +17,7 @@ namespace middlerApp.IDP.DataAccess.SqlServer.Migrations
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.0-rc.2.20475.6");
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("MRoleMUser", b =>
                 {
@@ -179,6 +179,35 @@ namespace middlerApp.IDP.DataAccess.SqlServer.Migrations
                     b.HasIndex("ApiResourceId");
 
                     b.ToTable("ApiResourceSecrets");
+                });
+
+            modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Entities.AuthenticationProvider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Parameters")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuthenticationProviders");
                 });
 
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Entities.Client", b =>
@@ -773,6 +802,39 @@ namespace middlerApp.IDP.DataAccess.SqlServer.Migrations
                     b.ToTable("UserConsents");
                 });
 
+            modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MExternalClaim", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Issuer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ExternalClaims");
+                });
+
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1151,6 +1213,17 @@ namespace middlerApp.IDP.DataAccess.SqlServer.Migrations
                     b.Navigation("Scope");
                 });
 
+            modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MExternalClaim", b =>
+                {
+                    b.HasOne("middlerApp.IDP.DataAccess.Entities.Models.MUser", "User")
+                        .WithMany("ExternalClaims")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MUserClaim", b =>
                 {
                     b.HasOne("middlerApp.IDP.DataAccess.Entities.Models.MUser", "User")
@@ -1230,6 +1303,8 @@ namespace middlerApp.IDP.DataAccess.SqlServer.Migrations
             modelBuilder.Entity("middlerApp.IDP.DataAccess.Entities.Models.MUser", b =>
                 {
                     b.Navigation("Claims");
+
+                    b.Navigation("ExternalClaims");
 
                     b.Navigation("Logins");
 
