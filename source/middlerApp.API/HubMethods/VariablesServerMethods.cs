@@ -6,6 +6,7 @@ using middler.Common.SharedModels.Interfaces;
 using middlerApp.Core.DataAccess.Entities.Models;
 using middlerApp.Core.Repository;
 using middlerApp.Events;
+using middlerApp.SharedModels.Interfaces;
 using SignalARRR.Attributes;
 using SignalARRR.Server;
 

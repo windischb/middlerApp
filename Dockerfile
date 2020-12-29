@@ -3,7 +3,8 @@ WORKDIR /sln
 
 COPY . .
 
-RUN dotnet publish -o ./publish
+RUN dotnet restore --configfile /sln/Nuget.config
+RUN dotnet publish /sln/source/middlerApp.API/middlerApp.API.csproj -o ./publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
 WORKDIR /app

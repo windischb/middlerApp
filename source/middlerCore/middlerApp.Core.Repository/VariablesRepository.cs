@@ -10,6 +10,7 @@ using middler.Common.SharedModels.Interfaces;
 using middlerApp.Core.DataAccess;
 using middlerApp.Core.DataAccess.Entities.Models;
 using middlerApp.Events;
+using middlerApp.SharedModels.Interfaces;
 using Newtonsoft.Json.Linq;
 using Reflectensions.ExtensionMethods;
 
@@ -127,9 +128,12 @@ namespace middlerApp.Core.Repository
                 {
                     if (parent.Children == null)
                     {
-                        parent.Children = new List<ITreeNode>();
+                        parent.Children = new List<ITreeNode>().ToArray();
                     }
-                    parent.Children.Add(treeNode);
+
+                    var l = parent.Children.ToList();
+                    l.Add(treeNode);
+                    parent.Children = l.ToArray();
                 }
             }
 

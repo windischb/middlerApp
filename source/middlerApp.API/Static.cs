@@ -17,6 +17,18 @@ namespace middlerApp.API
             Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != null && 
             Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER").ToBoolean();
 
+        public static string DbProvider
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("middlerAPP_DbProvider");
+            }
+            set
+            {
+                Environment.SetEnvironmentVariable("middlerAPP_DbProvider", value);
+            }
+        }
+
         public static bool IsDevelopment => Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development;
 
         public static string DomainName =>

@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using System.IO;
+using System.Linq;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace middlerApp.IDP.DataAccess.Sqlite

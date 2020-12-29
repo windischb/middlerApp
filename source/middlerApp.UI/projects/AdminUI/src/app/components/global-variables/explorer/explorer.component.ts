@@ -226,13 +226,13 @@ export class GlobalVariablesExplorerComponent {
         console.log(event);
     }
 
-    col = 8;
+    treeWidth = 200;
     id = -1;
 
-    onResize({ col }: NzResizeEvent): void {
+    onResize({ width }: NzResizeEvent): void {
         cancelAnimationFrame(this.id);
         this.id = requestAnimationFrame(() => {
-            this.col = col!;
+            this.treeWidth = width!;
         });
     }
 

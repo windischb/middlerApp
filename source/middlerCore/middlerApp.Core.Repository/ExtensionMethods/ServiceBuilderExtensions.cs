@@ -7,6 +7,7 @@ using middlerApp.Core.DataAccess;
 using middlerApp.Core.DataAccess.Postgres;
 using middlerApp.Core.DataAccess.Sqlite;
 using middlerApp.Core.DataAccess.SqlServer;
+using middlerApp.SharedModels.Interfaces;
 
 namespace middlerApp.Core.Repository.ExtensionMethods
 {

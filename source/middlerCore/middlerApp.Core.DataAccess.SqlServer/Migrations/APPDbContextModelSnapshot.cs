@@ -125,6 +125,9 @@ namespace middlerApp.Core.DataAccess.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<byte[]>("Bytes")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 

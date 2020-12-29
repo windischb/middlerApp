@@ -4,7 +4,7 @@ using System.Text;
 
 namespace middlerApp.Core.DataAccess.Entities.Models
 {
-    public class MiddlerAgent
+    public class MiddlerAgentEntity
     {
         public Guid? Id { get; set; }
 

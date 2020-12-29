@@ -39,13 +39,16 @@ namespace middlerApp.IDP.DataAccess
 
         public IDPDbContext(DbContextOptions<IDPDbContext> options) : base(options)
         {
+            
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
            
+
             ConfigureUserAndRoles(modelBuilder);
           
             ConfigureClientContext(modelBuilder);
@@ -416,5 +419,6 @@ namespace middlerApp.IDP.DataAccess
             //    .WithMany(t => t.UserRoles)
             //    .HasForeignKey(t => t.RoleId);
         }
+
     }
 }

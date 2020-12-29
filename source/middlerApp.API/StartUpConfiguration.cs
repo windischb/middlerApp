@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using middlerApp.API.Helper;
 using Reflectensions.ExtensionMethods;
+using Serilog.Events;
 
 namespace middlerApp.API
 {
@@ -11,8 +13,9 @@ namespace middlerApp.API
         public int? HttpsPort { get; set; } = 443;
         public string HttpsCertPath { get; set; } = "localhost.pfx";
         public string HttpsCertPassword { get; set; } = "ABC12abc";
-        
-        
+
+        public Logging Logging { get; set; } = new Logging();
+
         public StartUpAdminConfiguration AdminSettings { get; } = new StartUpAdminConfiguration();
 
         public StartUpIdpConfiguration IdpSettings { get; } = new StartUpIdpConfiguration();
@@ -68,8 +71,40 @@ namespace middlerApp.API
     {
         public string Provider { get; set; } = "postgres";
 
-        public string ConnectionString { get; set; } =
-            "Host=10.0.0.22;Database=MiddlerApp;Username=postgres;Password=postgres";
+        public string ConnectionString { get; set; } = //"Data Source=./data/middlerApp.db";
+        "Host=10.0.0.22;Database=MiddlerApp;Username=postgres;Password=postgres";
+    }
+
+    public class Logging
+    {
+        public string LogPath { get; set; } = "logs";
+
+        private Dictionary<string, LogEventLevel> _loglevels;
+
+        public Dictionary<string, LogEventLevel> LogLevels
+        {
+            get
+            {
+                if (_loglevels == null)
+                {
+                    _loglevels = GetDefaultLoggings();
+                }
+
+                return _loglevels;
+            }
+            set => _loglevels = value;
+        }
+
+
+
+        internal static Dictionary<string, LogEventLevel> GetDefaultLoggings()
+        {
+            return new Dictionary<string, LogEventLevel>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Default"] = LogEventLevel.Warning,
+                ["Microsoft.Hosting.Lifetime"] = LogEventLevel.Warning
+            };
+        }
     }
 
     //public class EndpointRulesConfiguration

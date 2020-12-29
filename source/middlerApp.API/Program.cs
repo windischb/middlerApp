@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using Microsoft.AspNetCore.Hosting;
@@ -6,16 +7,17 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using middlerApp.API.Helper;
+using Reflectensions;
 using Serilog;
 using Serilog.Events;
 
 namespace middlerApp.API
 {
-    
+
     public class Program
     {
 
-       
+
 
         public static int Main(string[] args)
         {
@@ -41,21 +43,6 @@ namespace middlerApp.API
         }
 
 
-
-        private static void ConfigureLogging()
-        {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
-                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Verbose)
-                .MinimumLevel.Override("IdentityServer4", LogEventLevel.Verbose)
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
-        }
-
         public static IHostBuilder CreateWebHostBuilder(string[] args)
         {
 
@@ -70,24 +57,84 @@ namespace middlerApp.API
                 );
         }
 
-       
         private static void BuildHostConfiguration(HostBuilderContext context, IConfigurationBuilder config)
         {
-
-            var env = context.HostingEnvironment;
-            config.AddJsonFile(PathHelper.GetFullPath("configuration.json"), optional: true);
-            config.AddEnvironmentVariables();
-
-            //var conf = config.Build().Get<StartUpConfiguration>();
-            
+            BuildConfiguration(config);
         }
+
+        private static void ConfigureLogging()
+        {
+
+            var configBuilder = BuildConfiguration(null);
+            StartUpConfiguration startUpConfiguration = configBuilder.Build().Get<StartUpConfiguration>();
+
+            var logConfig = new LoggerConfiguration();
+
+            foreach (var kv in startUpConfiguration.Logging.LogLevels)
+            {
+                var k = kv.Key;//.Replace('_', '.');
+                if (k.Equals("default", StringComparison.OrdinalIgnoreCase) || k.Equals("*", StringComparison.OrdinalIgnoreCase))
+                {
+                    logConfig.MinimumLevel.Is(kv.Value);
+                }
+                else
+                {
+                    logConfig.MinimumLevel.Override(k, kv.Value);
+                }
+
+            }
+
+            if (!string.IsNullOrWhiteSpace(startUpConfiguration.Logging.LogPath))
+            {
+                var path = PathHelper.GetFullPath(startUpConfiguration.Logging.LogPath);
+                path = Path.Combine(path, "log.txt");
+                logConfig = logConfig.WriteTo.File(path, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 31);
+            }
+
+
+            logConfig = logConfig.WriteTo.Console();
+
+
+            Log.Logger = logConfig.Enrich.FromLogContext()
+                .CreateLogger();
+
+        }
+
+        private static IConfigurationBuilder BuildConfiguration(IConfigurationBuilder config)
+        {
+            if (config == null)
+            {
+                config = new ConfigurationBuilder();
+            }
+
+
+            var file = PathHelper.GetFullPath("./data/configuration.json");
+            var directory = new FileInfo(file).Directory;
+            if (!directory.Exists)
+            {
+                directory.Create();
+            }
+
+            if (!File.Exists(file))
+            {
+                var json = Json.Converter.ToJson(new StartUpConfiguration(), true);
+                File.WriteAllText(file, json);
+            }
+
+            config.AddJsonFile(file, optional: true);
+
+
+            config.AddEnvironmentVariables();
+            return config;
+        }
+
 
         private static void ConfigureKestrel(WebHostBuilderContext context, KestrelServerOptions serverOptions)
         {
             Log.Debug("ConfigureKestrel");
             var config = context.Configuration.Get<StartUpConfiguration>();
             config.SetDefaultSettings();
-            
+
             var listenIp = IPAddress.Parse(config.ListeningIP);
 
             if (config.HttpPort.HasValue && config.HttpPort.Value != 0)
@@ -121,15 +168,15 @@ namespace middlerApp.API
             serverOptions.Listen(idpListenIp, config.IdpSettings.HttpsPort, options =>
             {
                 options.Protocols = HttpProtocols.Http1AndHttp2;
-                
+
                 options.UseHttps(PathHelper.GetFullPath(config.IdpSettings.HttpsCertPath), config.IdpSettings.HttpsCertPassword);
             });
 
         }
 
 
-        
+
     }
 
-    
+
 }

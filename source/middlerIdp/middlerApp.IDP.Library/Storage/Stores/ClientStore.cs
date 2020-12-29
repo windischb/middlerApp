@@ -39,6 +39,7 @@ namespace middlerApp.IDP.Library.Storage.Stores
         {
             IQueryable<Client> baseQuery = Context.Clients.AsQueryable()
                 .Where(x => x.ClientId == clientId)
+                .OrderBy(x => x.ClientId)
                 .Take(1);
 
             var client = await baseQuery.FirstOrDefaultAsync();

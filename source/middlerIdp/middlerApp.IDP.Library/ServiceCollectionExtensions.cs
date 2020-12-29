@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Security;
 using IdentityModel.AspNetCore.AccessTokenValidation;
 using IdentityModel.AspNetCore.OAuth2Introspection;
 using IdentityServer4;
@@ -106,6 +107,18 @@ namespace middlerApp.IDP.Library
             services.AddTransient<IApiSecretValidator, CustomApiSecretValidator>();
             services.AddTransient<ISecretsListValidator, CustomSecretValidator>();
 
+            services.AddHttpClient(OAuth2IntrospectionDefaults.BackChannelHttpClientName)
+                .ConfigurePrimaryHttpMessageHandler(() =>
+                {
+                    return new SocketsHttpHandler
+                    {
+                        SslOptions = new SslClientAuthenticationOptions
+                        {
+                            RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                        }
+                    };
+                });
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = "Bearer";
@@ -139,6 +152,7 @@ namespace middlerApp.IDP.Library
                     {
                         context.HttpContext.Response.Headers["Warning"] = context.Error;
                     };
+                    
 
                 });
                 //.AddNegotiate("Windows", "Windows Authentication", options =>

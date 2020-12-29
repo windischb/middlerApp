@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using middler.Common.SharedModels.Interfaces;
+using middlerApp.SharedModels.Interfaces;
 using Newtonsoft.Json.Linq;
 
 namespace middlerApp.Core.DataAccess.Entities.Models
@@ -21,9 +22,11 @@ namespace middlerApp.Core.DataAccess.Entities.Models
 
         public JToken Content { get; set; }
 
+        public byte[] Bytes { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public List<ITreeNode> Children { get; set; }
+        public ITreeNode[] Children { get; set; }
     }
 
     public static class TreeNodeExtensions

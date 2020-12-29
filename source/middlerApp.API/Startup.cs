@@ -1,11 +1,16 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
+using Jint;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +28,7 @@ using middlerApp.API.ExtensionMethods;
 using middlerApp.API.Helper;
 using middlerApp.API.Middleware;
 using middlerApp.API.Providers;
+using middlerApp.Core.DataAccess;
 using middlerApp.Core.Repository;
 using middlerApp.Core.Repository.ExtensionMethods;
 using middlerApp.IDP.Library;
@@ -31,6 +37,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Reflectensions;
+using Reflectensions.ExtensionMethods;
 using Reflectensions.JsonConverters;
 using Scripter;
 using Scripter.Engine.JavaScript;
@@ -48,7 +55,37 @@ namespace middlerApp.API
     {
         public Startup(IConfiguration configuration)
         {
+            
             Configuration = configuration;
+            
+        }
+
+        private StartUpConfiguration NormalizeConfig()
+        {
+            var sConfig = Configuration.Get<StartUpConfiguration>();
+            sConfig.SetDefaultSettings();
+            //Static.DbProvider = sConfig.DbSettings.Provider;
+            //if (sConfig.DbSettings.Provider.Equals("sqlite", StringComparison.OrdinalIgnoreCase))
+            //{
+                
+            //    var conBuilder = new SqliteConnectionStringBuilder(sConfig.DbSettings.ConnectionString);
+            //    conBuilder.DataSource = PathHelper.GetFullPath(conBuilder.DataSource);
+            //    sConfig.DbSettings.ConnectionString = conBuilder.ConnectionString;
+            //    var dbdir = new DirectoryInfo(Path.GetDirectoryName(conBuilder.DataSource));
+            //    if (!dbdir.Exists)
+            //    {
+            //        try
+            //        {
+            //            dbdir.Create();
+            //        }
+            //        catch
+            //        {
+            //            // ignored
+            //        }
+            //    }
+            //}
+
+            return sConfig;
         }
 
         public IConfiguration Configuration { get; }
@@ -60,8 +97,7 @@ namespace middlerApp.API
 
             Json.Converter.RegisterJsonConverter<ExpandoObjectConverter>(0);
 
-            var sConfig = Configuration.Get<StartUpConfiguration>();
-            sConfig.SetDefaultSettings();
+            var sConfig = this.NormalizeConfig();
             services.AddScoped<StartUpConfiguration>((provider => sConfig));
 
            
@@ -91,6 +127,7 @@ namespace middlerApp.API
             {
                 options.PayloadSerializerSettings.ContractResolver = new DefaultContractResolver();
                 options.PayloadSerializerSettings.Converters.Add(new StringEnumConverter());
+                options.PayloadSerializerSettings.Converters.Add(new ExpandoObjectConverter());
                 options.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
             services.AddSignalARRR();
@@ -100,7 +137,14 @@ namespace middlerApp.API
             {
                 config.AddCollectionMappers();
             } ,Assembly.GetExecutingAssembly(), typeof(IdpConfiguration).Assembly);
-            
+
+            services.AddScoped<Options>(provider =>
+            {
+                var opts = new Options();
+                opts.AddExtensionMethods(typeof(StringExtensions));
+                return opts;
+            });
+
             services.AddMiddler(options =>
                 options
                     .AddUrlRedirectAction()
@@ -117,8 +161,9 @@ namespace middlerApp.API
                     .AddTypeScriptEngine()
                     .AddPowerShellCoreEngine()
                     .AddModulePlugins()
-                    .AddDefaultScripterModules()
-                //.AddScripterModule<VariablesModule>()
+                //.AddScripterModule<ScsmProxy.ScripterModule.ScsmClientModule>()
+                    //.AddDefaultScripterModules()
+                    //.AddScripterModule<VariablesModule>()
                     //.AddScripterModule<TaskHelperModule>()
                    
             );
@@ -182,9 +227,9 @@ namespace middlerApp.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> _logger)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> _logger, StartUpConfiguration startUpConfiguration)
         {
-
+            
             app.UseForwardedHeaders();
             app.UseResponseCompression();
 
@@ -244,7 +289,7 @@ namespace middlerApp.API
             app.UseAuthorization();
 
             
-            app.UseMiddleware<LogClaimsMiddleware>();
+            //app.UseMiddleware<LogClaimsMiddleware>();
 
 
             app.UseEndpoints(endpoints =>

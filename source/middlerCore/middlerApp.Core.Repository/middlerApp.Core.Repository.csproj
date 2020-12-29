@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="middler.Core" Version="1.7.1" />
-    <PackageReference Include="middler.Common" Version="1.7.1" />
+    <PackageReference Include="middler.Core" Version="1.10.0" />
+    <PackageReference Include="middler.Common" Version="1.10.0" />
     <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
   </ItemGroup>
 

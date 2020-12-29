@@ -39,6 +39,7 @@ namespace middlerApp.IDP.Library
             var adminClient = DbContext.Clients
                 .Include(c => c.RedirectUris)
                 .Include(c => c.AllowedCorsOrigins)
+                
                 .FirstOrDefault(c => c.Id == IdpDefaultIdentifier.IdpClient);
 
             if (adminClient != null)

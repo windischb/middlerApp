@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using middlerApp.Agents.Shared;
+using middlerApp.Agents.Shared.ExtensionMethods;
+using Reflectensions.Helper;
 using SignalARRR.Server;
 
 namespace middlerApp.API
@@ -16,15 +18,49 @@ namespace middlerApp.API
             _clientManager = clientManager;
         }
 
-
-        public T GetInterface<T>() where T: class
+        public List<IMiddlerAgent> GetAllAgents()
         {
             var clients = _clientManager.GetHARRRClients<RemoteAgentHub>();
-            var client = clients.FirstOrDefault(agent => agent.Attributes.Has("Implements", typeof(T).FullName));
+            return clients.Select(c => new MiddlerAgent(c)).Cast<IMiddlerAgent>().ToList();
+        }
 
-            return client.GetTypedMethods<T>();
+        public IMiddlerAgent GetRandomAgent()
+        {
+            return GetAllAgents().RandomSingle();
         }
     }
 
+
+    public class MiddlerAgent: IMiddlerAgent
+    {
+        private ClientContext _clientContext;
+        public string Identifier { get; }
+
+        private IEnumerable<Type> _implementsInterface { get; }
+
+        public MiddlerAgent(ClientContext clientContext)
+        {
+            _clientContext = clientContext;
+            if (clientContext.Attributes.TryGetValue("Implements", out var implements))
+            {
+                _implementsInterface = implements.Select(TypeHelper.FindType).Where(t => t != null);
+            }
+        }
+
+        public T GetInterface<T>() where T : class
+        {
+            return _clientContext.GetTypedMethods<T>();
+        }
+
+        public bool ImplementsInterface<T>()
+        {
+            return ImplementsInterface(typeof(T));
+        }
+
+        public bool ImplementsInterface(Type interfaceType)
+        {
+            return _implementsInterface.Contains(interfaceType);
+        }
+    }
     
 }

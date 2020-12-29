@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using MailKit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -160,29 +161,36 @@ namespace middlerApp.API.Controllers.Admin
         [HttpGet("import-definitions")]
         public async Task<IActionResult> GetImportDefinitions()
         {
-            
-            var declarations = _serviceProvider.GetServices<ScripterTypeDefinition>();
 
-            var tds = declarations.ToDictionary(d => $"{d.FileName}.d.ts", d => d.GetImports()).Where(kv => !String.IsNullOrWhiteSpace(kv.Value));
+            //var registry = _serviceProvider.GetRequiredService<IScripterModuleRegistry>();
+
+            //var tds = registry.GetTypeDefinitions().ToDictionary(d => $"{d.FileName}.d.ts", d => d.GetImports()).Where(kv => !String.IsNullOrWhiteSpace(kv.Value));
             //var dir = PathHelper.GetFullPath("TypeDefinitions");
             //var tds = Directory.GetFiles(dir).Select(f => new FileInfo(f))
             //    .ToDictionary(f => f.Name, f => System.IO.File.ReadAllText(f.FullName)).ToList();
 
-            return Ok(tds);
+            return Ok(IScripterContextExtensions.TsImports.ToList());
         }
 
         [HttpGet("type-definitions")]
         public async Task<IActionResult> GetTypeDefinitions()
         {
 
-            var declarations = _serviceProvider.GetServices<ScripterTypeDefinition>();
-
-            var tds = declarations.ToDictionary(d => $"{d.FileName}.d.ts", d => d.GetTypeDefinitions()).Where(kv => !String.IsNullOrWhiteSpace(kv.Value));
+            //var registry = _serviceProvider.GetRequiredService<IScripterModuleRegistry>();
+            //var tds = registry.GetTypeDefinitions().ToDictionary(d => $"{d.FileName}.d.ts", d => d.GetTypeDefinitions()).Where(kv => !String.IsNullOrWhiteSpace(kv.Value));
             //var dir = PathHelper.GetFullPath("TypeDefinitions");
             //var tds = Directory.GetFiles(dir).Select(f => new FileInfo(f))
             //    .ToDictionary(f => f.Name, f => System.IO.File.ReadAllText(f.FullName)).ToList();
 
-            return Ok(tds);
+
+            //var baseTd = tds.FirstOrDefault(kv => kv.Key == "BaseTypeDefinition.d.ts");
+
+            var l = new List<KeyValuePair<string, string>>();
+            //l.Add(baseTd);
+            l.AddRange(IScripterContextExtensions.TsDefinitions.ToList());
+
+            //return Ok(tds);
+            return Ok(l);//.Where(d => d.Key.Contains("smtp", StringComparison.InvariantCultureIgnoreCase)));
         }
     }
 }

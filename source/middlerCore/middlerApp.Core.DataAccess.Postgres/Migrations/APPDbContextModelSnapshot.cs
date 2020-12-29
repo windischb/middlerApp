@@ -125,6 +125,9 @@ namespace middlerApp.Core.DataAccess.Postgres.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<byte[]>("Bytes")
+                        .HasColumnType("bytea");
+
                     b.Property<string>("Content")
                         .HasColumnType("text");
 

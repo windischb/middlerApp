@@ -7,10 +7,10 @@
 	<ItemGroup>
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
 		<PackageReference Include="IdentityModel.AspNetCore.AccessTokenValidation" Version="1.0.0-preview.3" />
-		<PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="4.0.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="5.0.0" />
-		<PackageReference Include="Reflectensions.Json" Version="4.7" />
+		<PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="4.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="5.0.1" />
+		<PackageReference Include="Reflectensions.Json" Version="4.9.1" />
 		<PackageReference Include="IdentityServer4" Version="4.1.1" />
 		<PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
 	</ItemGroup>

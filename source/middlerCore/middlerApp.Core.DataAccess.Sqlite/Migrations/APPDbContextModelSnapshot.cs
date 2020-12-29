@@ -122,6 +122,9 @@ namespace middlerApp.Core.DataAccess.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<byte[]>("Bytes")
+                        .HasColumnType("BLOB");
+
                     b.Property<string>("Content")
                         .HasColumnType("TEXT");
 

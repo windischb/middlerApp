@@ -71,8 +71,8 @@
 </div> -->
 
 <div nz-row style="flex-grow: 1;">
-    <div class="col" nz-col nz-resizable (nzResize)="onResize($event)" [nzMinColumn]="3" [nzMaxColumn]="20" [nzGridColumnCount]="24" [nzSpan]="col"
-    style="display: flex; flex-direction: column; flex-grow: 1;overflow: hidden;background-color: #d6d6d6;">
+    <div class="col" nz-col nz-resizable (nzResize)="onResize($event)"
+    style="display: flex; flex-direction: column; flex-grow: 1;overflow: hidden;background-color: #d6d6d6; min-width: 200px; height: 100%;" [style.width.px]="treeWidth">
     <nz-resize-handle nzDirection="right" style="background: #eaeaeb; width: 4px; right: 0px">
         <div class="right-wrap">
           <i class="right" nz-icon nzType="more" nzTheme="outline"></i>
@@ -128,8 +128,7 @@
             </tree-root>
         </div>
     </div>
-    <div class="col right" nz-col [nzSpan]="24 - col"
-    style="display: flex; flex-direction: column; flex-grow: 1;overflow: hidden; padding: 4px 4px 4px 0px">
+    <div class="col right" style="display: flex; flex-direction: column; flex-grow: 1;overflow: hidden; padding: 4px 4px 4px 0px">
         <div
                 style="background-color: #292f3b; color: white; font-weight: bold; font-size: 1.2rem;line-height: 2rem; padding-left: 14px;">
                 {{SelectedFolderPath$ | async}}</div>
