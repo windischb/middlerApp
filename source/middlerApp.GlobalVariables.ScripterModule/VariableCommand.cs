@@ -78,6 +78,6 @@ namespace middlerApp.GlobalVariables.ScripterModule
             return GetVariable(path)?.Bytes;
         }
 
-        public string Tags { get; }
+
     }
 }

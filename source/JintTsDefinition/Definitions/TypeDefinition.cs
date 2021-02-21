@@ -33,6 +33,7 @@ namespace JintTsDefinition
 
         public List<PropertyDefinition> Properties { get; set; } = new List<PropertyDefinition>();
 
+        public List<ConstructorDefinition> Constructors { get; set; } = new List<ConstructorDefinition>();
         public List<IndexerDefinition> Indexer { get; set; } = new List<IndexerDefinition>();
         public List<MethodDefinition> Methods { get; set; } = new List<MethodDefinition>();
 
@@ -57,6 +58,7 @@ namespace JintTsDefinition
             {
                 type = Nullable.GetUnderlyingType(type);
             }
+
 
             if (type?.FullName?.EndsWith("&") == true || type?.FullName?.EndsWith("*") == true)
             {
@@ -128,7 +130,7 @@ namespace JintTsDefinition
                 tDesc.GenericArguments = tdInfo.GenericTypeParameters.Any() ?
                     tdInfo.GenericTypeParameters.Select(t => FromType(t, validTypes)).ToList() :
                     tdInfo.GenericTypeArguments.Select(t => FromType(t, validTypes)).ToList();
-                tDesc.Name = $"{tDesc.Name}_{tDesc.GenericArguments.Count}";
+                tDesc.Name = $"{tDesc.Name}${tDesc.GenericArguments.Count}";
             }
 
             
@@ -184,12 +186,9 @@ namespace JintTsDefinition
             else
             {
 
-                if (type == typeof(TextWriter))
-                {
-                    var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic);
-                    var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-                }
-
+                tDesc.Constructors =
+                    type.GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                        .Select(ConstructorDefinition.FromConstructorInfo).ToList();
 
                 tDesc.Properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                     .Where(p => !p.IsIndexerProperty())

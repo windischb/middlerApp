@@ -43,7 +43,6 @@ namespace JintTsDefinition.ExtensionMethods
                 var genericTypes = tdInfo.GenericTypeParameters.Any() ?
                     tdInfo.GenericTypeParameters.Select(GetFriendlyName):
                     tdInfo.GenericTypeArguments.Select(GetFriendlyName);
-                //name = $"{name}{genericTypes.Count()}";
 
                 genericTypesString = $"<{String.Join(", ", genericTypes)}>" ;
             }

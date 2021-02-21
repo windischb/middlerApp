@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using middler.Action.Scripting;
+using middler.Action.Scripting.Models;
 using middler.Action.UrlRedirect;
 using middler.Action.UrlRewrite;
 using middler.Common.SharedModels.Enums;
@@ -28,9 +29,11 @@ using middlerApp.API.ExtensionMethods;
 using middlerApp.API.Helper;
 using middlerApp.API.Middleware;
 using middlerApp.API.Providers;
+using middlerApp.API.TsDefinitions;
 using middlerApp.Core.DataAccess;
 using middlerApp.Core.Repository;
 using middlerApp.Core.Repository.ExtensionMethods;
+using middlerApp.GlobalVariables.ScripterModule;
 using middlerApp.IDP.Library;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -43,11 +46,13 @@ using Scripter;
 using Scripter.Engine.JavaScript;
 using Scripter.Engine.PowerShellCore;
 using Scripter.Engine.TypeScript;
+using Scripter.Module.Http;
 using Scripter.Modules.Default;
 using SignalARRR.Server;
 using SignalARRR.Server.ExtensionMethods;
 using DecimalJsonConverter = middlerApp.API.JsonConverters.DecimalJsonConverter;
 using ExpandoObjectConverter = Newtonsoft.Json.Converters.ExpandoObjectConverter;
+using IScripterContextExtensions = middlerApp.API.ExtensionMethods.IScripterContextExtensions;
 
 namespace middlerApp.API
 {
@@ -138,10 +143,27 @@ namespace middlerApp.API
                 config.AddCollectionMappers();
             } ,Assembly.GetExecutingAssembly(), typeof(IdpConfiguration).Assembly);
 
+            services.AddScripter(context =>
+                context
+                    .AddJavaScriptEngine()
+                    .AddTypeScriptEngine()
+                    .AddPowerShellCoreEngine()
+                    .AddModulePlugins()
+                    .AddScripterModule<EndpointModule>()
+                    .AddScripterModule<GlobalVariablesModule>()
+            );
+
+            var JintAssemblies = new List<Assembly>();
+            JintAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies());
+            JintAssemblies.AddRange(IScripterContextExtensions.assembliesForJint);
             services.AddScoped<Options>(provider =>
             {
                 var opts = new Options();
                 opts.AddExtensionMethods(typeof(StringExtensions));
+                opts.CatchClrExceptions();
+                opts.DebugMode();
+                opts.AllowClr(JintAssemblies.ToArray());
+                
                 return opts;
             });
 
@@ -155,18 +177,7 @@ namespace middlerApp.API
                 
             );
 
-            services.AddScripter(context =>
-                context
-                    .AddJavaScriptEngine()
-                    .AddTypeScriptEngine()
-                    .AddPowerShellCoreEngine()
-                    .AddModulePlugins()
-                //.AddScripterModule<ScsmProxy.ScripterModule.ScsmClientModule>()
-                    //.AddDefaultScripterModules()
-                    //.AddScripterModule<VariablesModule>()
-                    //.AddScripterModule<TaskHelperModule>()
-                   
-            );
+            
 
             var idpConfig = new IdpConfiguration()
             {
@@ -224,6 +235,8 @@ namespace middlerApp.API
             services.AddHostedService<AuthenticationProviderContextHostedService>();
 
             services.AddNamedTransient<IAuthHandler, WindowsAuthHandler>("Windows");
+
+            services.AddSingleton<TsDefinitionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

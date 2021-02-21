@@ -15,6 +15,7 @@ using MailKit.Net.Imap;
 using McMaster.NETCore.Plugins;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using middler.Action.Scripting.Models;
 using middlerApp.Agents.Shared;
 using middlerApp.API.Helper;
 using Reflectensions.ExtensionMethods;
@@ -25,8 +26,8 @@ namespace middlerApp.API.ExtensionMethods
 {
     public static class IScripterContextExtensions
     {
-        public static Dictionary<string, string> TsDefinitions { get; set; } = new Dictionary<string, string>();
-        public static Dictionary<string, string> TsImports { get; set; } = new Dictionary<string, string>();
+        
+        internal static List<Assembly> assembliesForJint { get; } = new List<Assembly>();
 
         public static IScripterContext AddModulePlugins(this IScripterContext context)
         {
@@ -50,26 +51,16 @@ namespace middlerApp.API.ExtensionMethods
 
             foreach (var file in Directory.GetFiles(sharedDllsDir, "*.dll"))
             {
-                Assembly.LoadFrom(file);
+                var ass = Assembly.LoadFrom(file);
+                assembliesForJint.Add(ass);
             }
 
             foreach (var directory in Directory.GetDirectories(dir))
             {
-                //foreach (var file in Directory.GetFiles(directory, "*.dll"))
-                //{
-                //    tsDefinitionAssemblies.Add(file);
-                //}
-
-                //foreach (var file in Directory.GetFiles(directory))
-                //{
-                //    tsDefinitionAssemblies.Add(file);
-
-                //}
-
+                
                 foreach (var file in Directory.GetFiles(directory, "Scripter.Module.*.dll"))
                 {
                     assembliesToLoad.Add(file);
-                   
                     
                 }
 
@@ -110,92 +101,21 @@ namespace middlerApp.API.ExtensionMethods
                 loaders.Add(loader);
             }
 
-            var defBuilder = new DefinitionBuilder();
-            defBuilder.AddType<Guid>();
-            defBuilder.AddExtensionMethods(typeof(StringExtensions));
-            defBuilder.AddTypes(typeof(Task<>));
-            // Create an instance of plugin types
             foreach (var loader in loaders)
             {
                 using (loader.EnterContextualReflection())
                 {
-                    var dass = loader.LoadDefaultAssembly();
-                    defBuilder.AddTypesFromAssembly(dass);
-                    foreach (var referencedAssembly in dass.GetReferencedAssemblies())
-                    {
-
-                        var ass = Assembly.Load(referencedAssembly);
-                        defBuilder.AddTypesFromAssembly(ass);
-                    }
-
                     foreach (var pluginType in loader
                         .LoadDefaultAssembly()
                         .GetTypes()
                         .Where(t => typeof(IScripterModule).IsAssignableFrom(t) && !t.IsAbstract))
                     {
-                        var tsr = new TypeScriptRenderer();
-
-                        var tp = TypeDefinition.FromType(pluginType);
-
-                        var body = tsr.RenderBody(tp, 0, (definition, s) =>
-                        {
-                            switch (definition)
-                            {
-                                case MethodDefinition md:
-                                {
-                                    return $"export function {s}";
-                                }
-                                case PropertyDefinition pd:
-                                {
-                                    return $"export declare const {s}";
-                                }
-                            }
-
-                            return s;
-                        });
-                        
-                        //var mds = pluginType
-                        //    .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                        //    .Where(m => !m.IsSpecialName)
-                        //    .Select(MethodDefinition.FromMethodInfo)
-                        //    .Select(m => $"export function {tsr.Render(m, 0)}");
-                        var name = pluginType.Name;
-                        if (name.EndsWith("Module"))
-                        {
-                            name = name.Substring(0, name.Length - "Module".Length);
-                        }
-                        TsImports.Add($"{name}.ts",body);
-
+                        assembliesForJint.Add(pluginType.Assembly);
                         context.AddScripterModule(pluginType);
                     }
                 }
 
                 
-            }
-
-            
-
-            //foreach (var tsDefinitionAssembly in tsDefinitionAssemblies)
-            //{
-            //    var ass = Assembly.ReflectionOnlyLoadFrom(tsDefinitionAssembly);
-            //    foreach (var type in ass.GetTypes())
-            //    {
-            //        if (!type.IsPublic)
-            //        {
-            //            continue;
-            //        }
-
-            //        defBuilder.AddTypes(type);
-            //    }
-            //}
-
-            TsDefinitions = defBuilder.Render();
-
-
-
-            foreach (var (key, value) in TsDefinitions)
-            {
-                File.WriteAllText($"D:\\tstest\\{key}", value);
             }
 
             return context;

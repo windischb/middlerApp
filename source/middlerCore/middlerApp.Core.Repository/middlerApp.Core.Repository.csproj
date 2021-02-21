@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="middler.Core" Version="1.10.0" />
-    <PackageReference Include="middler.Common" Version="1.10.0" />
+    <PackageReference Include="middler.Core" Version="3.2.0" />
+    <PackageReference Include="middler.Common" Version="3.2.0" />
     <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
   </ItemGroup>
 

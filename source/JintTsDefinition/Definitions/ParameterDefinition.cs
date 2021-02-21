@@ -12,6 +12,8 @@ namespace JintTsDefinition
 
         public string Ref { get; set; }
 
+        public object DefaultValue { get; set; }
+        public bool IsOptional { get; set; }
 
         public override string ToString()
         {
@@ -31,7 +33,7 @@ namespace JintTsDefinition
                 desc.Ref = parameterInfo.IsOut ? "out " : "ref ";
                 pType = parameterInfo.ParameterType.GetElementType();
             }
-
+            
             if (pType.IsGenericType && pType.IsGenericTypeParameter() && !pType.IsArray)
             {
                 desc.Type = TypeDefinition.FromType(pType.GetGenericTypeDefinition());
@@ -40,6 +42,9 @@ namespace JintTsDefinition
             {
                 desc.Type = TypeDefinition.FromType(pType);
             }
+
+            desc.IsOptional = parameterInfo.IsOptional;
+            desc.DefaultValue = parameterInfo.DefaultValue;
 
             return desc;
         }

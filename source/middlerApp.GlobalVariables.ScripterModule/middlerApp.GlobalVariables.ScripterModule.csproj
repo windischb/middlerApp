@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Scripter.Shared" Version="2.0.0" />
-		<PackageReference Include="Reflectensions.Json" Version="4.9.1" />
+		<PackageReference Include="Scripter.Shared" Version="3.4.4" />
+		<PackageReference Include="Reflectensions.Json" Version="4.12.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 	</ItemGroup>
 

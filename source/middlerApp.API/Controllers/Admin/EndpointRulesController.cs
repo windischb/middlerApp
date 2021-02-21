@@ -14,6 +14,7 @@ using middler.Core;
 using middlerApp.API.Attributes;
 using middlerApp.API.ExtensionMethods;
 using middlerApp.API.Helper;
+using middlerApp.API.TsDefinitions;
 using middlerApp.Core.DataAccess.Entities.Models;
 using middlerApp.Core.Repository;
 using middlerApp.SharedModels;
@@ -159,38 +160,18 @@ namespace middlerApp.API.Controllers.Admin
 
 
         [HttpGet("import-definitions")]
-        public async Task<IActionResult> GetImportDefinitions()
+        public async Task<IActionResult> GetImportDefinitions([FromServices] TsDefinitionService tsDefinitionService)
         {
-
-            //var registry = _serviceProvider.GetRequiredService<IScripterModuleRegistry>();
-
-            //var tds = registry.GetTypeDefinitions().ToDictionary(d => $"{d.FileName}.d.ts", d => d.GetImports()).Where(kv => !String.IsNullOrWhiteSpace(kv.Value));
-            //var dir = PathHelper.GetFullPath("TypeDefinitions");
-            //var tds = Directory.GetFiles(dir).Select(f => new FileInfo(f))
-            //    .ToDictionary(f => f.Name, f => System.IO.File.ReadAllText(f.FullName)).ToList();
-
-            return Ok(IScripterContextExtensions.TsImports.ToList());
+            var list = tsDefinitionService.GetTsImports().ToList();
+            return Ok(list);
         }
 
         [HttpGet("type-definitions")]
-        public async Task<IActionResult> GetTypeDefinitions()
+        public async Task<IActionResult> GetTypeDefinitions([FromServices]TsDefinitionService tsDefinitionService)
         {
 
-            //var registry = _serviceProvider.GetRequiredService<IScripterModuleRegistry>();
-            //var tds = registry.GetTypeDefinitions().ToDictionary(d => $"{d.FileName}.d.ts", d => d.GetTypeDefinitions()).Where(kv => !String.IsNullOrWhiteSpace(kv.Value));
-            //var dir = PathHelper.GetFullPath("TypeDefinitions");
-            //var tds = Directory.GetFiles(dir).Select(f => new FileInfo(f))
-            //    .ToDictionary(f => f.Name, f => System.IO.File.ReadAllText(f.FullName)).ToList();
-
-
-            //var baseTd = tds.FirstOrDefault(kv => kv.Key == "BaseTypeDefinition.d.ts");
-
-            var l = new List<KeyValuePair<string, string>>();
-            //l.Add(baseTd);
-            l.AddRange(IScripterContextExtensions.TsDefinitions.ToList());
-
-            //return Ok(tds);
-            return Ok(l);//.Where(d => d.Key.Contains("smtp", StringComparison.InvariantCultureIgnoreCase)));
+            var list = tsDefinitionService.GetTsDefinitions().ToList();
+            return Ok(list);
         }
     }
 }

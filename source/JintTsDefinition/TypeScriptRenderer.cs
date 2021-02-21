@@ -67,6 +67,87 @@ namespace JintTsDefinition
 
         }
 
+        public string Render(ConstructorDefinition constructorDefinition, int indent)
+        {
+            var parameters = new List<string>();
+            var commentLines = new List<string>();
+            foreach (var parameter in constructorDefinition.Parameters)
+            {
+
+                var paramName = Defaults.NormalizeIdentifier(parameter.Name);
+               
+
+                var buildType = BuildTypeString(parameter.Type);
+                if (parameter.Type.IsArray && !buildType.EndsWith("[]"))
+                {
+                    buildType += "[]";
+                }
+
+
+                var optional = parameter.IsOptional ? "?" : null;
+                parameters.Add($"{paramName}{optional}: {buildType}");
+
+                if (parameter.Type.RawType?.Name == "Action" || parameter.Type.RawType?.Name.StartsWith("Action`") == true)
+                {
+                    continue;
+                }
+                if (parameter.Type.RawType?.Name.StartsWith("Func`") == true)
+                {
+                    continue;
+                }
+                if (parameter.Type.RawType?.Name.StartsWith("Predicate`") == true)
+                {
+                    continue;
+                }
+
+
+                var getType = GetTypeString(parameter.Type);
+
+                if (buildType != getType || parameter.IsOptional)
+                {
+                    string defaultValue = null;
+                    if (parameter.IsOptional)
+                    {
+                        var valueString = "null";
+
+                        if (parameter.DefaultValue != null)
+                        {
+                            switch (parameter.DefaultValue)
+                            {
+
+                                case Enum enu:
+                                    {
+                                        valueString = $"{parameter.Type.FriendlyName}.{enu.ToString()}";
+                                        break;
+                                    }
+                                case bool b:
+                                    {
+                                        valueString = b.ToString().ToLower();
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        valueString = parameter.DefaultValue.ToString();
+                                        break;
+                                    }
+                            }
+                        }
+
+                        defaultValue = $" = {valueString}";
+                    }
+
+
+                    commentLines.Add($"@param {paramName} {getType}{defaultValue}");
+                }
+
+            }
+
+            var comments = BuildDocComments(indent, commentLines);
+
+            return $"{comments}{GetIndentString(indent)}{ constructorDefinition.Name}({String.Join(", ", parameters)});";
+
+        }
+
         public string Render(IndexerDefinition indexerDefinition, int indent)
         {
             var parameters = new List<string>();
@@ -129,7 +210,10 @@ namespace JintTsDefinition
                 {
                     buildType += "[]";
                 }
-                parameters.Add($"{paramName}: {buildType}");
+
+              
+                var optional = methodDescriptionParameter.IsOptional ? "?" : null;
+                parameters.Add($"{paramName}{optional}: {buildType}");
 
                 if (methodDescriptionParameter.Type.RawType?.Name == "Action" || methodDescriptionParameter.Type.RawType?.Name.StartsWith("Action`") == true)
                 {
@@ -147,9 +231,41 @@ namespace JintTsDefinition
                 
                 var getType = GetTypeString(methodDescriptionParameter.Type);
 
-                if (buildType != getType)
+                if (buildType != getType || methodDescriptionParameter.IsOptional)
                 {
-                    commentLines.Add($"@param {paramName} {getType}");
+                    string defaultValue = null;
+                    if (methodDescriptionParameter.IsOptional)
+                    {
+                        var valueString = "null";
+
+                        if (methodDescriptionParameter.DefaultValue != null)
+                        {
+                            switch (methodDescriptionParameter.DefaultValue)
+                            {
+                                
+                                case Enum enu:
+                                {
+                                    valueString = $"{methodDescriptionParameter.Type.FriendlyName}.{enu.ToString()}";
+                                    break;
+                                }
+                                case bool b:
+                                {
+                                    valueString = b.ToString().ToLower();
+                                    break;
+                                }
+                                default:
+                                {
+                                    valueString = methodDescriptionParameter.DefaultValue.ToString();
+                                    break;
+                                }
+                            }
+                        }
+
+                        defaultValue = $" = {valueString}";
+                    }
+
+
+                    commentLines.Add($"@param {paramName} {getType}{defaultValue}");
                 }
 
             }
@@ -161,11 +277,6 @@ namespace JintTsDefinition
 
             var comments = BuildDocComments(indent, commentLines);
 
-
-            if (methodDefinition.Name == "ContinueWith")
-            {
-                var z = methodDefinition;
-            }
             
             var genericArguments = string.Empty;
             if (methodDefinition.GenericArguments.Any())
@@ -177,6 +288,7 @@ namespace JintTsDefinition
 
         }
 
+        
         private List<TypeDefinition> GetParamtersTypesRecurse(TypeDefinition typeDefinition)
         {
             var l = new List<TypeDefinition>();
@@ -320,6 +432,25 @@ namespace JintTsDefinition
                 }
             }
 
+            if (typeDefinition.Constructors.Any())
+            {
+                strb.AppendLine();
+                foreach (var constructor in typeDefinition.Constructors)
+                {
+                    var rendered = Render(constructor, indentNext);
+
+                    if (definitionString != null)
+                    {
+                        rendered = definitionString(constructor, rendered);
+                    }
+
+                    if (!String.IsNullOrWhiteSpace(rendered))
+                    {
+                        strb.AppendLine(rendered);
+                    }
+                }
+            }
+
             if (typeDefinition.Indexer?.Any() == true)
             {
                 strb.AppendLine();
@@ -343,10 +474,21 @@ namespace JintTsDefinition
             if (typeDefinition.Methods?.Any() == true)
             {
                
-
                 strb.AppendLine();
                 foreach (var typeDescriptionMethod in typeDefinition.Methods)
                 {
+                    var isGenericMethod = typeDescriptionMethod.GenericArguments.Any();
+                    if (isGenericMethod && !Defaults.IncludeGenericMethods)
+                    {
+                        continue;
+                    }
+
+                    var hasReferenceParameter = typeDescriptionMethod.Parameters.Any(p => !String.IsNullOrWhiteSpace(p.Ref));
+                    if (hasReferenceParameter && !Defaults.IncludeMethodsWithReferenceParameters)
+                    {
+                        continue;
+                    }
+
                     var rendered = Render(typeDescriptionMethod, indentNext);
 
                     if (definitionString != null)

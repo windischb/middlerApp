@@ -116,5 +116,8 @@ namespace JintTsDefinition
         {
             ["finally"] = "finaly"
         };
+
+        public bool IncludeGenericMethods { get; set; }
+        public bool IncludeMethodsWithReferenceParameters { get; set; }
     }
 }
