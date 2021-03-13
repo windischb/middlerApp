@@ -38,7 +38,7 @@ namespace middlerApp.API
 
         private static StartUpConfiguration BuildConfig()
         {
-            var configFilePath = PathHelper.GetFullPath("configuration.json");
+            var configFilePath = PathHelper.GetFullPath("./data/configuration.json");
             if (!Static.RunningInDocker)
             {
                 Log.Debug("Build Configuration");

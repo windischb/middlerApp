@@ -1,4 +1,4 @@
-import { Component, Input, EventEmitter, Output, ViewContainerRef, ChangeDetectorRef, ComponentFactoryResolver, TemplateRef, ChangeDetectionStrategy, OnInit } from "@angular/core";
+import { Component, Input, EventEmitter, Output, ViewContainerRef, ChangeDetectorRef, ComponentFactoryResolver, TemplateRef, ChangeDetectionStrategy, OnInit, OnDestroy } from "@angular/core";
 import { ListItem } from '../endpoint-rules-list/list-item';
 import { EndpointAction } from '../models/endpoint-action';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -24,7 +24,7 @@ import { map, tap } from 'rxjs/operators';
         multi: true
     }],
 })
-export class EndpointActionsListComponent implements OnInit, ControlValueAccessor {
+export class EndpointActionsListComponent implements OnInit, ControlValueAccessor, OnDestroy {
 
 
     // @Input() ruleId: string;
@@ -68,6 +68,9 @@ export class EndpointActionsListComponent implements OnInit, ControlValueAccesso
         private actionHelper: ActionHelperService,
         private rulesService: EndpointRulesService,) {
 
+    }
+    ngOnDestroy(): void {
+        this.ContextMenu?.Close()
     }
 
     ngOnInit() {
@@ -425,7 +428,7 @@ export class EndpointActionsListComponent implements OnInit, ControlValueAccesso
 
         switch (action.ActionType) {
             case 'UrlRedirect': {
-                this.actionHelper.GetModal('UrlRedirect').SetData(action)
+                this.ContextMenu = this.actionHelper.GetModal('UrlRedirect').SetData(action)
                     .AddEventHandler("OK", context => {
                         action.Parameters = context.payload;
                         this.actions = [...this.actions];
@@ -439,7 +442,7 @@ export class EndpointActionsListComponent implements OnInit, ControlValueAccesso
                 break;
             }
             case 'UrlRewrite': {
-                this.actionHelper.GetModal('UrlRewrite')
+                this.ContextMenu = this.actionHelper.GetModal('UrlRewrite')
                     .SetData(action)
                     .AddEventHandler("OK", context => {
                         action.Parameters = context.payload;
@@ -471,7 +474,7 @@ export class EndpointActionsListComponent implements OnInit, ControlValueAccesso
             //     break;
             // }
             case 'Script': {
-                this.actionHelper.GetModal('Script')
+                this.ContextMenu = this.actionHelper.GetModal('Script')
                     .SetData(action)
                     .AddEventHandler("OK", context => {
                         action.Parameters = context.payload;

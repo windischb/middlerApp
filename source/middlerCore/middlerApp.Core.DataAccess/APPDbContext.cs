@@ -14,6 +14,8 @@ namespace middlerApp.Core.DataAccess
 
         public DbSet<TypeDefinition> TypeDefinitions { get; set; }
 
+        //public DbSet<MiddlerAgentEntity> Agents { get; set; }
+
         public APPDbContext(DbContextOptions<APPDbContext> options): base(options)
         {
 

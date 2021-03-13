@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using middlerApp.Agents.Shared;
 using middlerApp.Agents.Shared.ExtensionMethods;
+using middlerApp.API.ExtensionMethods;
 using Reflectensions.Helper;
 using SignalARRR.Server;
 
@@ -49,7 +50,7 @@ namespace middlerApp.API
 
         public T GetInterface<T>() where T : class
         {
-            return _clientContext.GetTypedMethods<T>();
+            return _clientContext.GetTypedMethods<T>(IScripterContextExtensions.assemblyLocations);
         }
 
         public bool ImplementsInterface<T>()

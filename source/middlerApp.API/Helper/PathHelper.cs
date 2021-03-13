@@ -35,7 +35,7 @@ namespace middlerApp.API.Helper
                 basePath = ContentPath;
             }
             var p = Path.GetFullPath(Path.Combine(basePath, path));
-            return p;
+            return p.Replace("\\","/");
         }
         
     }

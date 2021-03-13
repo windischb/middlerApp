@@ -39,6 +39,8 @@ using NamedServices.Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Prise;
+using Prise.DependencyInjection;
 using Reflectensions;
 using Reflectensions.ExtensionMethods;
 using Reflectensions.JsonConverters;
@@ -127,8 +129,7 @@ namespace middlerApp.API
             services.AddSpaStaticFiles();
 
 
-
-            services.AddSignalR().AddNewtonsoftJsonProtocol(options =>
+           services.AddSignalR().AddNewtonsoftJsonProtocol(options =>
             {
                 options.PayloadSerializerSettings.ContractResolver = new DefaultContractResolver();
                 options.PayloadSerializerSettings.Converters.Add(new StringEnumConverter());
@@ -151,17 +152,21 @@ namespace middlerApp.API
                     .AddModulePlugins()
                     .AddScripterModule<EndpointModule>()
                     .AddScripterModule<GlobalVariablesModule>()
+                    .AddScripterModule<TestModule.TestModule>()
             );
 
-            var JintAssemblies = new List<Assembly>();
-            JintAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies());
-            JintAssemblies.AddRange(IScripterContextExtensions.assembliesForJint);
+           
             services.AddScoped<Options>(provider =>
             {
                 var opts = new Options();
                 opts.AddExtensionMethods(typeof(StringExtensions));
                 opts.CatchClrExceptions();
                 opts.DebugMode();
+
+                var JintAssemblies = new List<Assembly>();
+                JintAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies());
+                JintAssemblies.AddRange(IScripterContextExtensions.assembliesForJint);
+
                 opts.AllowClr(JintAssemblies.ToArray());
                 
                 return opts;
