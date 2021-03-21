@@ -37,13 +37,12 @@
     <PackageReference Include="Serilog.AspNetCore" Version="4.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Weikio.PluginFramework" Version="1.2.2" />
-    <!--<PackageReference Include="SignalARRR.Server" Version="3.1.1" />-->
+    <PackageReference Include="SignalARRR.Server" Version="3.1.2" />
     
 
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SignalARRR\source\SignalARRR.Server\SignalARRR.Server.csproj" />
     <ProjectReference Include="..\..\middlerApp.Agents.Shared\middlerApp.Agents.Shared.csproj" />
     <ProjectReference Include="..\..\middlerApp.Ldap\middlerApp.Ldap.csproj" />
     <ProjectReference Include="..\JintTsDefinition\JintTsDefinition.csproj" />
