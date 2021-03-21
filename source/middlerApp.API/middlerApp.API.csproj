@@ -28,6 +28,7 @@
     <PackageReference Include="middler.Action.UrlRewrite" Version="3.2.0" />
     <PackageReference Include="middler.TaskHelper.ScripterModule" Version="3.2.0" />
     <PackageReference Include="middler.Variables.ScripterModule" Version="1.8.0" />
+    <PackageReference Include="middlerApp.Agents.Shared" Version="0.3.0" />
     <PackageReference Include="Reflectensions.Json" Version="4.12.5" />
     <PackageReference Include="Scripter" Version="3.4.4" />
     <PackageReference Include="Scripter.Engine.PowerShellCore" Version="3.4.4" />
@@ -43,7 +44,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\middlerApp.Agents.Shared\middlerApp.Agents.Shared.csproj" />
     <ProjectReference Include="..\..\middlerApp.Ldap\middlerApp.Ldap.csproj" />
     <ProjectReference Include="..\JintTsDefinition\JintTsDefinition.csproj" />
     <ProjectReference Include="..\middlerApp.GlobalVariables.ScripterModule\middlerApp.GlobalVariables.ScripterModule.csproj" />
