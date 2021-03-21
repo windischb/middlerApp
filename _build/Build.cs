@@ -37,6 +37,7 @@ class Build : NukeBuild
     AbsolutePath SourceDirectory => RootDirectory / "source";
     AbsolutePath TestsDirectory => RootDirectory / "tests";
     AbsolutePath OutputDirectory => RootDirectory / "output";
+    AbsolutePath PublishDirectory => RootDirectory / "publish";
 
     Project MainProject => Solution.Projects.FirstOrDefault(p => p.Name == "middlerApp.API");
 
@@ -82,8 +83,11 @@ class Build : NukeBuild
                 .SetInformationalVersion(GitVersion.InformationalVersion)
                 .EnableNoRestore()
                 .SetOutput(OutputDirectory)
+                .SetRuntime("win-x64")
                 
             );
+
+            CompressionTasks.CompressZip(OutputDirectory, PublishDirectory / "middlerApp.zip");
             
         });
 

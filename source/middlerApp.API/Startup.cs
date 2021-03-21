@@ -39,8 +39,6 @@ using NamedServices.Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Prise;
-using Prise.DependencyInjection;
 using Reflectensions;
 using Reflectensions.ExtensionMethods;
 using Reflectensions.JsonConverters;

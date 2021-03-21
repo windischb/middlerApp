@@ -23,6 +23,7 @@ using Reflectensions.HelperClasses;
 using Scripter.Shared;
 using Serilog;
 using Serilog.Core;
+using Weikio.PluginFramework.Catalogs;
 
 namespace middlerApp.API.ExtensionMethods
 {
@@ -32,6 +33,29 @@ namespace middlerApp.API.ExtensionMethods
         internal static List<Assembly> assembliesForJint { get; } = new List<Assembly>();
         internal static List<string> assemblyLocations { get; } = new List<string>();
 
+        //public static IScripterContext AddModulePlugins(this IScripterContext context)
+        //{
+        //    var dir = PathHelper.GetFullPath("Scripter/M");
+
+            
+        //    var folderPluginCatalog = new FolderPluginCatalog(@dir, type =>
+        //    {
+        //        type.Implements<IScripterModule>();
+        //    });
+
+
+        //    folderPluginCatalog.Initialize().GetAwaiter().GetResult();
+
+        //    var assemplyPlugins = folderPluginCatalog.GetPlugins();
+
+        //    foreach (var plugin in assemplyPlugins)
+        //    {
+        //        assembliesForJint.Add(plugin.Assembly);
+        //        context.AddScripterModule(plugin);
+        //    }
+
+        //    return context;
+        //}
         public static IScripterContext AddModulePlugins(this IScripterContext context)
         {
 
@@ -81,38 +105,38 @@ namespace middlerApp.API.ExtensionMethods
                     assembliesToLoad.Add(file);
                 }
 
-                foreach (var file in Directory.GetFiles(directory, "*.Definition.dll"))
-                {
-                    assembliesToLoad.Add(file);
-                }
+                //foreach (var file in Directory.GetFiles(directory, "*.Definition.dll"))
+                //{
+                //    assembliesToLoad.Add(file);
+                //}
 
-                foreach (var file in Directory.GetFiles(directory, "*.dll"))
-                {
-                    assemblyLocations.Add(file);
-                    //assembliesForJint.Add(ass);
-                }
+                //foreach (var file in Directory.GetFiles(directory, "*.dll"))
+                //{
+                //    assemblyLocations.Add(file);
+                //    //assembliesForJint.Add(ass);
+                //}
 
-                foreach (var file in Directory.GetFiles(directory, "*.SharedModels.dll"))
-                {
-                    var ass = Assembly.LoadFrom(file);
-                    //assembliesForJint.Add(ass);
-                }
+                //foreach (var file in Directory.GetFiles(directory, "*.SharedModels.dll"))
+                //{
+                //    var ass = Assembly.LoadFrom(file);
+                //    //assembliesForJint.Add(ass);
+                //}
 
-                foreach (var file in Directory.GetFiles(directory, "*.Shared.Interfaces.dll"))
-                {
-                    //var ass = Assembly.LoadFrom(file);
-                    //assembliesToLoad.Add(file);
-                    //foreach (var referencedAssembly in ass.GetReferencedAssemblies())
-                    //{
-                    //    if (referencedAssembly.Name.Contains("scsm", StringComparison.CurrentCultureIgnoreCase))
-                    //    {
-                    //        //Assembly.LoadFrom(referencedAssembly.Name + ".dll");
-                    //    }
+                //foreach (var file in Directory.GetFiles(directory, "*.Shared.Interfaces.dll"))
+                //{
+                //    //var ass = Assembly.LoadFrom(file);
+                //    //assembliesToLoad.Add(file);
+                //    //foreach (var referencedAssembly in ass.GetReferencedAssemblies())
+                //    //{
+                //    //    if (referencedAssembly.Name.Contains("scsm", StringComparison.CurrentCultureIgnoreCase))
+                //    //    {
+                //    //        //Assembly.LoadFrom(referencedAssembly.Name + ".dll");
+                //    //    }
 
-                    //}
+                //    //}
 
-                    //assembliesForJint.Add(ass);
-                }
+                //    //assembliesForJint.Add(ass);
+                //}
 
             }
 
@@ -124,16 +148,16 @@ namespace middlerApp.API.ExtensionMethods
             foreach (var assembly in assembliesToLoad)
             {
 
-                Assembly.LoadFrom(assembly);
+                //Assembly.LoadFrom(assembly);
 
-                //var loader = PluginLoader.CreateFromAssemblyFile(
-                //    assembly,
-                //    config =>
-                //    {
-                //        config.PreferSharedTypes = true;
-                //        config.LoadInMemory = true;
-                //    });
-                //loaders.Add(loader);
+                var loader = PluginLoader.CreateFromAssemblyFile(
+                    assembly,
+                    config =>
+                    {
+                        config.PreferSharedTypes = true;
+                        config.LoadInMemory = false;
+                    });
+                loaders.Add(loader);
             }
 
             foreach (var loader in loaders)
@@ -143,17 +167,29 @@ namespace middlerApp.API.ExtensionMethods
 
                     var defAss = loader.LoadDefaultAssembly();
 
-                    foreach (var referencedAssembly in defAss.GetReferencedAssemblies())
-                    {
-                        //Assembly.Load(referencedAssembly);
-                        loader.LoadAssembly(referencedAssembly);
-                    }
+                    //foreach (var referencedAssembly in defAss.GetReferencedAssemblies())
+                    //{
+                    //    //Assembly.Load(referencedAssembly);
+                    //    loader.LoadAssembly(referencedAssembly);
+                    //}
+
+                    //var assDir = Path.GetDirectoryName(defAss.Location);
+
+                    //foreach (var enumerateFile in Directory.EnumerateFiles(assDir, "*.dll", SearchOption.AllDirectories))
+                    //{
+                    //    if (!enumerateFile.Equals(defAss.Location, StringComparison.CurrentCultureIgnoreCase))
+                    //    {
+                    //        var addas = loader.LoadAssemblyFromPath(enumerateFile);
+                    //        assembliesForJint.Add(addas);
+                    //    }
+                            
+                    //}
 
                     foreach (var pluginType in defAss
                         .GetTypes()
                         .Where(t => typeof(IScripterModule).IsAssignableFrom(t) && !t.IsAbstract))
                     {
-                        
+
                         assembliesForJint.Add(pluginType.Assembly);
                         context.AddScripterModule(pluginType);
                     }
