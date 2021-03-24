@@ -26,9 +26,9 @@
     <PackageReference Include="middler.Action.Scripting" Version="3.3.1" />
     <PackageReference Include="middler.Action.UrlRedirect" Version="3.3.1" />
     <PackageReference Include="middler.Action.UrlRewrite" Version="3.3.1" />
-    <PackageReference Include="middler.TaskHelper.ScripterModule" Version="3.2.0" />
+    <PackageReference Include="middler.TaskHelper.ScripterModule" Version="3.3.1" />
     <PackageReference Include="middler.Variables.ScripterModule" Version="1.8.0" />
-    <PackageReference Include="middlerApp.Agents.Shared" Version="0.4.0" />
+    <PackageReference Include="middlerApp.Agents.Shared" Version="0.3.0" />
     <PackageReference Include="Reflectensions.Json" Version="4.12.5" />
     <PackageReference Include="Scripter" Version="3.4.5" />
     <PackageReference Include="Scripter.Engine.PowerShellCore" Version="3.4.5" />

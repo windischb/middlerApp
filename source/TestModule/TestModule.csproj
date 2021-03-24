@@ -5,9 +5,9 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Scripter.Shared" Version="3.4.4" />
+		<PackageReference Include="Scripter.Shared" Version="3.4.5" />
 		<PackageReference Include="Reflectensions.Json" Version="4.12.5" />
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
 
 </Project>
