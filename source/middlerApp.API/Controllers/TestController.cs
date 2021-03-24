@@ -32,7 +32,7 @@ namespace middlerApp.API.Controllers
         }
 
         [HttpGet("clients")]
-        public async Task<IActionResult> GetMiddlerAgents()
+        public IActionResult GetMiddlerAgents()
         {
 
             var clients = ClientManager.GetHARRRClients<RemoteAgentHub>().Select(c => new MiddlerClientDto(c));

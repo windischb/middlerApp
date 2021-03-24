@@ -15,7 +15,9 @@ namespace middlerApp.IDP.Library
 
         public static Guid Scope_OpenID_Id { get; } = new Guid("00000003-0001-0000-0000-000000000000");
         public static Guid Scope_Roles_Id { get; } = new Guid("00000003-0002-0000-0000-000000000000");
-        public static Guid Scope_IdentityServerApi_Id { get; } = new Guid("00000003-0003-0000-0000-000000000000");
+        public static Guid Scope_MiddlerAppApi_Id { get; } = new Guid("00000003-0003-0000-0000-000000000000");
+
+        public static Guid Resource_MiddlerApi_Id { get; } = new Guid("00000004-0000-0000-0000-000000000000");
 
     }
 
@@ -63,13 +65,23 @@ namespace middlerApp.IDP.Library
             Type = ScopeType.IdentityResource
         };
 
-        public static Scope Scope_IdentityServerApi { get; } = new Scope()
+        public static Scope Scope_MiddlerAppApi { get; } = new Scope()
         {
-            Id = IdpDefaultIdentifier.Scope_IdentityServerApi_Id,
+            Id = IdpDefaultIdentifier.Scope_MiddlerAppApi_Id,
             Name = "IdentityServerApi",
             Type = ScopeType.ApiScope
         };
 
+
+        public static ApiResource Resource_MiddlerApi { get; } = new ApiResource()
+        {
+            Id = IdpDefaultIdentifier.Resource_MiddlerApi_Id,
+            DisplayName = "Middler API Resource",
+            Name = "middlerApi",
+            Enabled = true,
+            NonEditable = true,
+            ShowInDiscoveryDocument = true
+        };
 
     }
 }

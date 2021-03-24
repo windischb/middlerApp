@@ -284,7 +284,8 @@ namespace JintTsDefinition
                 genericArguments = $"<{string.Join(", ", methodDefinition.GenericArguments)}>";
             }
 
-            return $"{comments}{GetIndentString(indent)}{ methodDefinition.Name}{genericArguments}({String.Join(", ", parameters)}): {BuildTypeString(methodDefinition.ReturnType)};";
+            var ret = $"{comments}{GetIndentString(indent)}{ methodDefinition.Name}{genericArguments}({String.Join(", ", parameters)}): {returnType};";
+            return ret;
 
         }
 

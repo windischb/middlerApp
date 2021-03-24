@@ -22,7 +22,7 @@ namespace middlerApp.API.Controllers
 
 
         [HttpGet("config")]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
             var conf = new AdminUIConfig();
 

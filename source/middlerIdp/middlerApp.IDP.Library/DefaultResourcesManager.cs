@@ -29,8 +29,9 @@ namespace middlerApp.IDP.Library
 
         public void EnsureAllResourcesExists()
         {
-
+            Console.WriteLine("EnsureAllResourcesExists");
             EnsureAdminClientExists().GetAwaiter().GetResult();
+            EnsureAdminApiExists().GetAwaiter().GetResult();
         }
 
         public async Task EnsureAdminClientExists()
@@ -83,7 +84,7 @@ namespace middlerApp.IDP.Library
                 new ClientScope()
                 {
                     ClientId = client.Id,
-                    ScopeId = IdpDefaultResources.Scope_IdentityServerApi.Id
+                    ScopeId = IdpDefaultResources.Scope_MiddlerAppApi.Id
                 },
 
             };
@@ -96,6 +97,51 @@ namespace middlerApp.IDP.Library
 
         }
 
+        public async Task EnsureAdminApiExists()
+        {
+            var apiResource = await
+                DbContext.ApiResources
+                    .Include(r => r.Scopes)
+                    .Include(r => r.Secrets)
+                    .FirstOrDefaultAsync(r => r.Id == IdpDefaultIdentifier.Resource_MiddlerApi_Id);
+
+            if(apiResource != null)
+                return;
+
+            await EnsureDefaultScopesExists();
+
+            apiResource = IdpDefaultResources.Resource_MiddlerApi;
+            apiResource.Secrets = new List<ApiResourceSecret>
+            {
+                new ApiResourceSecret()
+                {
+                    ApiResourceId = apiResource.Id,
+                    Value = "ABC12abc!".Sha256()
+                }
+            };
+            apiResource.Scopes = new List<ApiResourceScope>
+            {
+                new ApiResourceScope()
+                {
+                    ApiResourceId = apiResource.Id,
+                    ScopeId = IdpDefaultResources.Scope_OpenID.Id
+                },
+                new ApiResourceScope()
+                {
+                    ApiResourceId = apiResource.Id,
+                    ScopeId = IdpDefaultResources.Scope_Roles.Id
+                },
+                new ApiResourceScope()
+                {
+                    ApiResourceId = apiResource.Id,
+                    ScopeId = IdpDefaultResources.Scope_MiddlerAppApi.Id
+                },
+            };
+
+            await DbContext.ApiResources.AddAsync(apiResource);
+            await DbContext.SaveChangesAsync();
+
+        }
         private void UpdateAdminClient(Client client)
         {
             SetUris(client);
@@ -217,14 +263,14 @@ namespace middlerApp.IDP.Library
 
             await EnsureScopeExists(IdpDefaultResources.Scope_OpenID);
             await EnsureScopeExists(IdpDefaultResources.Scope_Roles);
-            await EnsureScopeExists(IdpDefaultResources.Scope_IdentityServerApi);
+            await EnsureScopeExists(IdpDefaultResources.Scope_MiddlerAppApi);
             await DbContext.SaveChangesAsync();
 
         }
 
         private async Task EnsureScopeExists(Scope scope)
         {
-            var foundScope = await DbContext.Scopes.AsQueryable().FirstOrDefaultAsync(s => s.Name == scope.Name);
+            var foundScope = await DbContext.Scopes.FirstOrDefaultAsync(s => s.Name == scope.Name);
             if (foundScope == null)
             {
                 await DbContext.Scopes.AddAsync(scope);

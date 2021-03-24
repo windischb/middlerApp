@@ -32,7 +32,7 @@ namespace middlerApp.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetStatus()
+        public IActionResult GetStatus()
         {
             //await this.HttpContext.AuthenticateAsync("Bearer");
 

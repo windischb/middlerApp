@@ -31,7 +31,7 @@ namespace JintTsDefinition
                 type = type.GetElementType() ?? type;
             }
 
-            if (type.IsGenericTypeParameter())
+            if (type.IsGenericTypeParameter() || type.IsGenericMethodParameter)
             {
                 return typeDefinition.Name;
             }

@@ -32,6 +32,7 @@ namespace middlerApp.API.TsDefinitions
 
             var defBuilder = new DefinitionBuilder();
 
+            //defBuilder.AddTypes(typeof(List<>));
             defBuilder.AddExtensionMethods(typeof(Reflectensions.ExtensionMethods.StringExtensions));
             defBuilder.AddType<EndpointModule>();
 

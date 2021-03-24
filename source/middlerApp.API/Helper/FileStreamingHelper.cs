@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
+#pragma warning disable 618
+#pragma warning disable SYSLIB0001
 
 namespace middlerApp.API.Helper {
     public static class FileStreamingHelper {

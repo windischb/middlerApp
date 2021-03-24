@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Security;
+using System.Threading.Tasks;
 using IdentityModel.AspNetCore.AccessTokenValidation;
 using IdentityModel.AspNetCore.OAuth2Introspection;
 using IdentityServer4;
@@ -143,14 +144,15 @@ namespace middlerApp.IDP.Library
                 {
                     options.Authority = "https://localhost:4445";
 
-                    options.ClientId = "api";
+                    options.ClientId = "middlerApi";
                     options.ClientSecret = "ABC12abc!";
                     options.EnableCaching = true;
                     options.CacheDuration = TimeSpan.FromMinutes(10);
                     options.Events = new OAuth2IntrospectionEvents();
-                    options.Events.OnAuthenticationFailed = async context =>
+                    options.Events.OnAuthenticationFailed = context =>
                     {
                         context.HttpContext.Response.Headers["Warning"] = context.Error;
+                        return Task.CompletedTask;
                     };
                     
 

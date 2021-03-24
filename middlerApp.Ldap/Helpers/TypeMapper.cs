@@ -79,7 +79,7 @@ namespace LdapTools.Helpers
                 }
                 catch (Exception e)
                 {
-                    
+                    // ignored
                 }
 
                 yield return val;

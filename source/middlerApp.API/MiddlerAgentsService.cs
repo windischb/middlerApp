@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using middlerApp.Agents.Shared;
 using middlerApp.Agents.Shared.ExtensionMethods;
@@ -52,6 +53,7 @@ namespace middlerApp.API
         {
             return _clientContext.GetTypedMethods<T>(IScripterContextExtensions.assemblyLocations);
         }
+
 
         public bool ImplementsInterface<T>()
         {

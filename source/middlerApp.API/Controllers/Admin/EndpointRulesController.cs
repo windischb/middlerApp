@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using MailKit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -160,14 +159,14 @@ namespace middlerApp.API.Controllers.Admin
 
 
         [HttpGet("import-definitions")]
-        public async Task<IActionResult> GetImportDefinitions([FromServices] TsDefinitionService tsDefinitionService)
+        public IActionResult GetImportDefinitions([FromServices] TsDefinitionService tsDefinitionService)
         {
             var list = tsDefinitionService.GetTsImports().ToList();
             return Ok(list);
         }
 
         [HttpGet("type-definitions")]
-        public async Task<IActionResult> GetTypeDefinitions([FromServices]TsDefinitionService tsDefinitionService)
+        public IActionResult GetTypeDefinitions([FromServices]TsDefinitionService tsDefinitionService)
         {
 
             var list = tsDefinitionService.GetTsDefinitions().ToList();

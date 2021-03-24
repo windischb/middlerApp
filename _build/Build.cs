@@ -87,7 +87,7 @@ class Build : NukeBuild
                 
             );
 
-            CompressionTasks.CompressZip(OutputDirectory, PublishDirectory / "middlerApp.zip");
+            //CompressionTasks.CompressZip(OutputDirectory, PublishDirectory / $"middlerApp_{GitVersion.NuGetVersionV2}.zip");
             
         });
 

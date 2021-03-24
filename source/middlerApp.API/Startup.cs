@@ -46,8 +46,6 @@ using Scripter;
 using Scripter.Engine.JavaScript;
 using Scripter.Engine.PowerShellCore;
 using Scripter.Engine.TypeScript;
-using Scripter.Module.Http;
-using Scripter.Modules.Default;
 using SignalARRR.Server;
 using SignalARRR.Server.ExtensionMethods;
 using DecimalJsonConverter = middlerApp.API.JsonConverters.DecimalJsonConverter;
@@ -150,14 +148,15 @@ namespace middlerApp.API
                     .AddModulePlugins()
                     .AddScripterModule<EndpointModule>()
                     .AddScripterModule<GlobalVariablesModule>()
-                    .AddScripterModule<TestModule.TestModule>()
             );
 
            
             services.AddScoped<Options>(provider =>
             {
                 var opts = new Options();
+                opts.AddExtensionMethods(typeof(CustomStringExtensions));
                 opts.AddExtensionMethods(typeof(StringExtensions));
+               
                 opts.CatchClrExceptions();
                 opts.DebugMode();
 

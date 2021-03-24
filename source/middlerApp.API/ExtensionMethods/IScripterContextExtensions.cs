@@ -1,29 +1,12 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using AutoMapper.Internal;
-using JintTsDefinition;
-using MailKit;
-using MailKit.Net.Imap;
 using McMaster.NETCore.Plugins;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using middler.Action.Scripting.Models;
-using middlerApp.Agents.Shared;
 using middlerApp.API.Helper;
-using Reflectensions.ExtensionMethods;
-using Reflectensions.HelperClasses;
 using Scripter.Shared;
 using Serilog;
-using Serilog.Core;
-using Weikio.PluginFramework.Catalogs;
 
 namespace middlerApp.API.ExtensionMethods
 {
@@ -164,32 +147,36 @@ namespace middlerApp.API.ExtensionMethods
             {
                 using (loader.EnterContextualReflection())
                 {
-
+                    
                     var defAss = loader.LoadDefaultAssembly();
 
+
+                    
                     //foreach (var referencedAssembly in defAss.GetReferencedAssemblies())
                     //{
                     //    //Assembly.Load(referencedAssembly);
                     //    loader.LoadAssembly(referencedAssembly);
                     //}
 
-                    //var assDir = Path.GetDirectoryName(defAss.Location);
+                    var assDir = Path.GetDirectoryName(defAss.Location);
+                    //assemblyLocations.Add(assDir);
+                    foreach (var enumerateFile in Directory.EnumerateFiles(assDir, "*.dll", SearchOption.AllDirectories))
+                    {
+                        if (!enumerateFile.Equals(defAss.Location, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            var addas = loader.LoadAssemblyFromPath(enumerateFile);
+                            assembliesForJint.Add(addas);
+                            assemblyLocations.Add(enumerateFile);
+                        }
 
-                    //foreach (var enumerateFile in Directory.EnumerateFiles(assDir, "*.dll", SearchOption.AllDirectories))
-                    //{
-                    //    if (!enumerateFile.Equals(defAss.Location, StringComparison.CurrentCultureIgnoreCase))
-                    //    {
-                    //        var addas = loader.LoadAssemblyFromPath(enumerateFile);
-                    //        assembliesForJint.Add(addas);
-                    //    }
-                            
-                    //}
+                    }
 
                     foreach (var pluginType in defAss
                         .GetTypes()
                         .Where(t => typeof(IScripterModule).IsAssignableFrom(t) && !t.IsAbstract))
                     {
 
+                        
                         assembliesForJint.Add(pluginType.Assembly);
                         context.AddScripterModule(pluginType);
                     }

@@ -42,7 +42,10 @@ namespace JintTsDefinition
         public static MethodDefinition FromMethodInfo(MethodInfo methodInfo)
         {
 
-
+            if (methodInfo.Name.Equals("ToArray", StringComparison.OrdinalIgnoreCase))
+            {
+                var m = methodInfo;
+            }
             var methodDescription = new MethodDefinition();
             methodDescription.Name = methodInfo.Name;
             methodDescription.AccessModifier = GetAccessModifier(methodInfo.Attributes);
